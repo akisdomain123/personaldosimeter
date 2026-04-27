@@ -1,81 +1,698 @@
-<main class="container">
-  <span class="badge">Radiation dose monitor</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radiation Activity Dose Monitor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
 
-  <!-- HERO / TOTAL -->
-  <section class="grid hero">
-    <div>
-      <h1>Radiation Activity Dose Monitor</h1>
-      <p>Track your radiation exposure from daily activities.</p>
-    </div>
+    * {
+      box-sizing: border-box;
+    }
 
-    <div class="card">
-      <div class="small">Total estimated dose</div>
-      <div id="totalDose" class="big-number">0 µSv</div>
-      <div id="totalMSv" class="small">0.000 mSv</div>
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 16px;
+    }
 
-      <div class="small" style="margin-top:12px;">Public benchmark</div>
-      <div class="progress-wrap">
-        <div id="progressBar" class="progress-bar"></div>
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 14px 0 8px;
+      font-size: 42px;
+      line-height: 1.05;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+    }
+
+    p {
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero {
+      grid-template-columns: 1.35fr 0.65fr;
+      align-items: end;
+    }
+
+    .main-grid {
+      grid-template-columns: 0.9fr 1.1fr;
+      margin-top: 18px;
+    }
+
+    .limit-grid {
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 18px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+    }
+
+    .limit-card {
+      background: #dcfce7;
+      border-color: #bbf7d0;
+    }
+
+    .limit-card.child {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+
+    .limit-card.medical {
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+
+    .worker-card {
+      background: #f5f3ff;
+      border-color: #ddd6fe;
+    }
+
+    .worker-card.max {
+      background: #fff7ed;
+      border-color: #fed7aa;
+    }
+
+    .worker-card.note {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .big-number {
+      font-size: 36px;
+      font-weight: 900;
+      margin: 6px 0;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, select, button {
+      font: inherit;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      background: white;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 15px;
+      background: #0f172a;
+      color: white;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    button.secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    button.danger {
+      background: #991b1b;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .progress-wrap {
+      height: 14px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #0f172a;
+      transition: width 0.2s ease;
+    }
+
+    .progress-bar.worker {
+      background: #7c3aed;
+    }
+
+    .status {
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 12px;
+      font-weight: 700;
+    }
+
+    .status.low {
+      background: #dcfce7;
+      border: 1px solid #bbf7d0;
+    }
+
+    .status.medium {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+    }
+
+    .status.high {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+    }
+
+    .activity-info {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    .log-item {
+      display: grid;
+      grid-template-columns: 1fr 110px 130px 44px;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+
+    .log-title {
+      font-weight: 800;
+    }
+
+    .pill {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .empty {
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 14px;
+      border-radius: 14px;
+    }
+
+    .disclaimer {
+      margin-top: 18px;
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+
+    .marketing {
+      margin-top: 18px;
+    }
+
+    ul {
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 850px) {
+      .hero, .main-grid, .limit-grid, .log-item {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      body {
+        font-size: 16px;
+      }
+
+      .container {
+        padding: 18px 12px;
+      }
+
+      .badge {
+        font-size: 12px;
+        padding: 5px 10px;
+      }
+
+      h1 {
+        font-size: 30px;
+        line-height: 1.1;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .card {
+        border-radius: 16px;
+        padding: 16px;
+      }
+
+      .big-number {
+        font-size: 30px;
+      }
+
+      input, select, button {
+        min-height: 46px;
+        font-size: 16px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .button-row {
+        flex-direction: column;
+      }
+
+      .progress-wrap {
+        height: 16px;
+      }
+
+      .activity-info {
+        font-size: 15px;
+      }
+
+      .log-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .log-item button {
+        width: 100%;
+        margin-top: 6px;
+      }
+
+      .pill {
+        line-height: 1.4;
+      }
+
+      .hero,
+      .main-grid,
+      .limit-grid {
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      h1 {
+        font-size: 27px;
+      }
+
+      .container {
+        padding: 14px 10px;
+      }
+
+      .card {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <span class="badge">Radiation dose monitor</span>
+
+    <section class="grid hero">
+      <div>
+        <h1>Radiation Activity Dose Monitor</h1>
+        <p>Select an activity, add it to your log, and track estimated radiation dose for the year.</p>
       </div>
 
-      <div class="small" style="margin-top:12px;">Worker benchmark</div>
-      <div class="progress-wrap">
-        <div id="workerProgressBar" class="progress-bar worker"></div>
+      <div class="card">
+        <div class="small">Total estimated dose</div>
+        <div id="totalDose" class="big-number">0 µSv</div>
+        <div id="totalMSv" class="small">0.000 mSv</div>
+
+        <div class="small" style="margin-top:12px;">Public benchmark progress</div>
+        <div class="progress-wrap">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <div class="small" style="margin-top:12px;">Worker annual limit progress</div>
+        <div class="progress-wrap">
+          <div id="workerProgressBar" class="progress-bar worker"></div>
+        </div>
+
+        <div id="statusBox" class="status low">Below yearly public guidance.</div>
+        <div id="workerComparison" class="small" style="margin-top:10px;"></div>
+      </div>
+    </section>
+
+    <section class="grid limit-grid">
+      <div class="card limit-card">
+        <h2>Adult yearly guidance</h2>
+        <div class="big-number">1 mSv</div>
+        <p>Recommended public exposure benchmark per year, excluding natural background and medically needed procedures.</p>
       </div>
 
-      <div id="statusBox" class="status low"></div>
-      <div id="workerComparison" class="small"></div>
-    </div>
-  </section>
+      <div class="card limit-card child">
+        <h2>Child yearly guidance</h2>
+        <div class="big-number">≤ 1 mSv</div>
+        <p>Children should generally be kept as low as reasonably achievable. Use the same 1 mSv/year benchmark for non-medical extra exposure.</p>
+      </div>
 
-  <!-- ADD ACTIVITY (MOVED UP) -->
-  <section class="card" style="margin-top:18px;">
-    <h2>Add activity</h2>
+      <div class="card limit-card medical">
+        <h2>Medical radiation</h2>
+        <div class="big-number">Doctor-led</div>
+        <p>Medical scans can exceed 1 mSv when clinically necessary. This app is only an estimate, not medical advice.</p>
+      </div>
+    </section>
 
-    <label>Activity</label>
-    <select id="activitySelect"></select>
+    <section class="grid limit-grid">
+      <div class="card worker-card">
+        <h2>Worker annual limit</h2>
+        <div class="big-number">20 mSv</div>
+        <p>Common occupational radiation exposure limit, averaged over 5 years.</p>
+      </div>
 
-    <div id="activityInfo" class="activity-info"></div>
+      <div class="card worker-card max">
+        <h2>Single-year max</h2>
+        <div class="big-number">50 mSv</div>
+        <p>Maximum occupational exposure in a single year in many regulatory frameworks.</p>
+      </div>
 
-    <label style="margin-top:12px;">Quantity</label>
-    <input id="quantityInput" type="number" min="0" step="0.1" value="1" />
+      <div class="card worker-card note">
+        <h2>Worker context</h2>
+        <div class="big-number">Monitored</div>
+        <p>Radiation workers usually wear official dosimeters. This app is for awareness and education only.</p>
+      </div>
+    </section>
 
-    <div class="button-row">
-      <button id="addBtn">Add activity</button>
-      <button id="resetBtn" class="secondary">Reset log</button>
-    </div>
-  </section>
+    <section class="grid main-grid">
+      <div class="card">
+        <h2>Add activity</h2>
 
-  <!-- GUIDELINES BELOW -->
-  <section class="grid limit-grid">
-    <div class="card limit-card">
-      <h2>Public guideline</h2>
-      <div class="big-number">1 mSv</div>
-      <p>Annual additional exposure guideline for general public.</p>
-    </div>
+        <label for="activitySelect">Activity</label>
+        <select id="activitySelect"></select>
 
-    <div class="card worker-card">
-      <h2>Worker limit</h2>
-      <div class="big-number">20 mSv</div>
-      <p>Annual occupational exposure (avg over 5 years).</p>
-    </div>
+        <div id="activityInfo" class="activity-info"></div>
 
-    <div class="card worker-card max">
-      <h2>Max (1 year)</h2>
-      <div class="big-number">50 mSv</div>
-      <p>Upper limit for a single year.</p>
-    </div>
-  </section>
+        <br />
 
-  <!-- ACTIVITY LOG -->
-  <section class="card">
-    <h2>Activity log</h2>
-    <div id="activityLog"></div>
-  </section>
+        <label for="quantityInput">Quantity</label>
+        <input id="quantityInput" type="number" min="0" step="0.1" value="1" />
 
-  <!-- DISCLAIMER -->
-  <section class="card disclaimer">
-    <h2>Disclaimer</h2>
-    <p>This is an estimate only. Not a medical or regulatory dosimeter.</p>
-  </section>
-</main>
+        <div class="button-row">
+          <button id="addBtn">Add activity</button>
+          <button id="resetBtn" class="secondary">Reset log</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Activity log</h2>
+        <div id="activityLog"></div>
+      </div>
+    </section>
+
+    <section class="card disclaimer">
+      <h2>Important disclaimer</h2>
+      <p>
+        This is an educational estimator. Radiation dose varies by equipment, altitude, route, body size, scan protocol, shielding, time, and other factors.
+        Do not use this as a medical device, official worker dosimeter, or regulatory radiation record.
+      </p>
+    </section>
+
+    <section class="card marketing">
+      <h2>Why use this?</h2>
+      <p><strong>Are you tracking your radiation exposure? You should be.</strong></p>
+
+      <p>Every year, millions of people undergo X-rays, CT scans, and even full-body DEXA scans—often without realizing how much radiation they are accumulating over time.</p>
+
+      <p><strong>The truth? Most patients do not understand:</strong></p>
+      <ul>
+        <li>How much radiation each test exposes them to</li>
+        <li>What the safe limits are</li>
+        <li>When they might be going beyond what is necessary</li>
+      </ul>
+
+      <p><strong>That is where MyRadiationTracker comes in.</strong></p>
+
+      <p>👉 <strong>Track your exposure</strong><br>
+      Log every scan—X-rays, CTs, DEXA, and more—and see your cumulative radiation in one place.</p>
+
+      <p>👉 <strong>Know your limits</strong><br>
+      Instantly understand whether you are within safe exposure levels.</p>
+
+      <p>👉 <strong>Make informed decisions</strong><br>
+      Before your next scan, check your history and have smarter conversations with your doctor.</p>
+
+      <p>👉 <strong>Avoid unnecessary tests</strong><br>
+      Many people unknowingly repeat scans or opt for routine imaging that may not be needed.</p>
+    </section>
+  </main>
+
+  <script>
+    const PUBLIC_LIMIT_USV = 1000;        // 1 mSv
+    const WORKER_LIMIT_USV = 20000;       // 20 mSv
+    const WORKER_SINGLE_YEAR_MAX_USV = 50000; // 50 mSv
+
+    const activities = [
+      { name: "Dental X-ray", doseUSv: 5, unit: "per event", category: "Medical" },
+      { name: "DEXA bone density scan", doseUSv: 1, unit: "per scan", category: "Medical" },
+      { name: "Chest X-ray", doseUSv: 100, unit: "per event", category: "Medical" },
+      { name: "Mammogram", doseUSv: 400, unit: "per event", category: "Medical" },
+      { name: "CT head", doseUSv: 2000, unit: "per event", category: "Medical" },
+      { name: "CT chest", doseUSv: 7000, unit: "per event", category: "Medical" },
+      { name: "CT abdomen / pelvis", doseUSv: 10000, unit: "per event", category: "Medical" },
+      { name: "PET scan", doseUSv: 14000, unit: "per event", category: "Medical" },
+      { name: "Nuclear stress test", doseUSv: 10000, unit: "per event", category: "Medical" },
+
+      { name: "Flight: 1 hour", doseUSv: 3.5, unit: "per hour", category: "Travel" },
+      { name: "Short-haul flight: 2 hours", doseUSv: 7, unit: "per flight", category: "Travel" },
+      { name: "Short-haul flight: 3 hours", doseUSv: 10.5, unit: "per flight", category: "Travel" },
+      { name: "Medium-haul flight: 5 hours", doseUSv: 17.5, unit: "per flight", category: "Travel" },
+      { name: "Long-haul flight: 8 hours", doseUSv: 28, unit: "per flight", category: "Travel" },
+      { name: "Long-haul flight: 12 hours", doseUSv: 42, unit: "per flight", category: "Travel" },
+      { name: "Ultra long-haul flight: 16 hours", doseUSv: 56, unit: "per flight", category: "Travel" },
+
+      { name: "Banana", doseUSv: 0.1, unit: "per banana", category: "Food" },
+      { name: "Background radiation: 1 day", doseUSv: 8.2, unit: "per day", category: "Environment" },
+      { name: "High altitude living: 1 day", doseUSv: 0.55, unit: "extra per day", category: "Environment" },
+      { name: "Radon exposure: low home, 1 year", doseUSv: 1000, unit: "per year", category: "Environment" },
+      { name: "Radon exposure: moderate home, 1 year", doseUSv: 3000, unit: "per year", category: "Environment" },
+      { name: "Radon exposure: high home, 1 year", doseUSv: 10000, unit: "per year", category: "Environment" },
+
+      { name: "Working in nuclear plant: 1 day", doseUSv: 10, unit: "per day", category: "Occupational" },
+      { name: "Handling radioactive materials: low, 1 day", doseUSv: 5, unit: "per day", category: "Occupational" },
+      { name: "Interventional radiology worker: 1 procedure", doseUSv: 50, unit: "per procedure", category: "Occupational" },
+      { name: "Aircrew yearly exposure", doseUSv: 3000, unit: "per year", category: "Occupational" }
+    ];
+
+    let log = JSON.parse(localStorage.getItem("radiationActivityLog") || "[]");
+
+    const activitySelect = document.getElementById("activitySelect");
+    const quantityInput = document.getElementById("quantityInput");
+    const activityInfo = document.getElementById("activityInfo");
+    const activityLog = document.getElementById("activityLog");
+    const totalDose = document.getElementById("totalDose");
+    const totalMSv = document.getElementById("totalMSv");
+    const progressBar = document.getElementById("progressBar");
+    const workerProgressBar = document.getElementById("workerProgressBar");
+    const statusBox = document.getElementById("statusBox");
+    const workerComparison = document.getElementById("workerComparison");
+
+    function formatDose(uSv) {
+      if (uSv >= 1000) return (uSv / 1000).toFixed(2) + " mSv";
+      return uSv.toFixed(1) + " µSv";
+    }
+
+    function makeId() {
+      return Math.random().toString(36).slice(2) + Date.now().toString(36);
+    }
+
+    function loadActivities() {
+      activitySelect.innerHTML = activities.map((activity, index) => {
+        return `<option value="${index}">${activity.name}</option>`;
+      }).join("");
+      updateActivityInfo();
+    }
+
+    function updateActivityInfo() {
+      const selected = activities[Number(activitySelect.value)];
+      activityInfo.innerHTML = `
+        <strong>${selected.category}</strong><br>
+        Estimated dose: <strong>${formatDose(selected.doseUSv)}</strong> ${selected.unit}
+      `;
+    }
+
+    function addActivity() {
+      const selected = activities[Number(activitySelect.value)];
+      const quantity = Number(quantityInput.value || 0);
+
+      if (quantity <= 0) {
+        alert("Please enter a quantity greater than 0.");
+        return;
+      }
+
+      log.push({
+        id: makeId(),
+        name: selected.name,
+        category: selected.category,
+        unit: selected.unit,
+        doseUSv: selected.doseUSv,
+        quantity: quantity,
+        totalUSv: selected.doseUSv * quantity,
+        date: new Date().toISOString()
+      });
+
+      localStorage.setItem("radiationActivityLog", JSON.stringify(log));
+      quantityInput.value = 1;
+      render();
+    }
+
+    function removeActivity(id) {
+      log = log.filter(item => item.id !== id);
+      localStorage.setItem("radiationActivityLog", JSON.stringify(log));
+      render();
+    }
+
+    function resetLog() {
+      if (!confirm("Clear all saved activities?")) return;
+      log = [];
+      localStorage.removeItem("radiationActivityLog");
+      render();
+    }
+
+    function getTotalUSv() {
+      return log.reduce((sum, item) => sum + item.totalUSv, 0);
+    }
+
+    function renderSummary() {
+      const total = getTotalUSv();
+      const publicPercent = Math.min((total / PUBLIC_LIMIT_USV) * 100, 100);
+      const workerPercent = Math.min((total / WORKER_LIMIT_USV) * 100, 100);
+
+      totalDose.textContent = formatDose(total);
+      totalMSv.textContent = (total / 1000).toFixed(3) + " mSv";
+      progressBar.style.width = publicPercent + "%";
+      workerProgressBar.style.width = workerPercent + "%";
+
+      statusBox.className = "status";
+
+      if (total < 500) {
+        statusBox.classList.add("low");
+        statusBox.textContent = "Low: under 50% of the 1 mSv public benchmark.";
+      } else if (total < PUBLIC_LIMIT_USV) {
+        statusBox.classList.add("medium");
+        statusBox.textContent = "Approaching the 1 mSv public benchmark.";
+      } else if (total < WORKER_LIMIT_USV) {
+        statusBox.classList.add("high");
+        statusBox.textContent = "Above the public benchmark. Still below the worker annual limit.";
+      } else if (total < WORKER_SINGLE_YEAR_MAX_USV) {
+        statusBox.classList.add("high");
+        statusBox.textContent = "Above the worker annual limit. Review exposure with a radiation safety professional.";
+      } else {
+        statusBox.classList.add("high");
+        statusBox.textContent = "Above the single-year worker max benchmark. Seek professional review.";
+      }
+
+      workerComparison.textContent =
+        "Worker comparison: " +
+        ((total / WORKER_LIMIT_USV) * 100).toFixed(1) +
+        "% of 20 mSv annual occupational limit.";
+    }
+
+    function renderLog() {
+      if (log.length === 0) {
+        activityLog.innerHTML = '<div class="empty">No activities added yet.</div>';
+        return;
+      }
+
+      activityLog.innerHTML = log.map(item => `
+        <div class="log-item">
+          <div>
+            <div class="log-title">${escapeHtml(item.name)}</div>
+            <span class="pill">${escapeHtml(item.category)} · ${formatDose(item.doseUSv)} ${escapeHtml(item.unit)}</span>
+            <div class="small">${new Date(item.date).toLocaleString()}</div>
+          </div>
+          <div>
+            <strong>${item.quantity}</strong>
+            <div class="small">quantity</div>
+          </div>
+          <div>
+            <strong>${formatDose(item.totalUSv)}</strong>
+            <div class="small">dose</div>
+          </div>
+          <button class="danger" onclick="removeActivity('${item.id}')">×</button>
+        </div>
+      `).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function render() {
+      renderSummary();
+      renderLog();
+    }
+
+    activitySelect.addEventListener("change", updateActivityInfo);
+    document.getElementById("addBtn").addEventListener("click", addActivity);
+    document.getElementById("resetBtn").addEventListener("click", resetLog);
+
+    loadActivities();
+    render();
+  </script>
+</body>
+</html>
