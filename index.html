@@ -336,48 +336,18 @@
     }
 
 
-    .login-card {
-      margin-top: 18px;
-      background: #ffffff;
-    }
+    
 
-    .login-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
+    
 
-    .user-chip {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      background: #f1f5f9;
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-weight: 700;
-    }
+    
 
-    .user-chip img {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-    }
+    
 
-    .setup-note {
-      margin-top: 10px;
-      padding: 12px;
-      border-radius: 14px;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      color: #1e3a8a;
-      font-size: 13px;
-    }
+    
 
   </style>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-</head>
+  </head>
 <body>
   <main class="container">
     <span class="badge">Radiation dose monitor</span>
@@ -400,26 +370,7 @@
     </section>
 
 
-    <section class="card login-card">
-      <div class="login-row">
-        <div>
-          <h2>Google Login</h2>
-          <p>Sign in with Google to label saved dose history with your account.</p>
-          <div class="setup-note">
-            Developer setup: replace <strong>366602380707-6ng4b08irn4if2ps5kfnpd6084s6ugaa.apps.googleusercontent.com</strong> in the JavaScript with your real Google OAuth Client ID.
-          </div>
-        </div>
-
-        <div>
-          <div id="googleSignInButton"></div>
-          <div id="userChip" class="user-chip">
-            <img id="userPhoto" alt="User photo" />
-            <span id="userName"></span>
-          </div>
-          <button id="googleSignOutBtn" class="secondary" style="display:none; margin-top:10px;">Sign out</button>
-        </div>
-      </div>
-    </section>
+    
 
     <section class="grid limit-grid">
       <div class="card limit-card">
@@ -530,8 +481,7 @@
     ];
 
     let log = JSON.parse(localStorage.getItem("radiationActivityLog") || "[]");
-    let currentUser = JSON.parse(localStorage.getItem("radiationGoogleUser") || "null");
-
+    
     const activitySelect = document.getElementById("activitySelect");
     const quantityInput = document.getElementById("quantityInput");
     const activityInfo = document.getElementById("activityInfo");
@@ -540,11 +490,9 @@
     const totalMSv = document.getElementById("totalMSv");
     const progressBar = document.getElementById("progressBar");
     const statusBox = document.getElementById("statusBox");
-    const userChip = document.getElementById("userChip");
-    const userPhoto = document.getElementById("userPhoto");
+        const userPhoto = document.getElementById("userPhoto");
     const userName = document.getElementById("userName");
-    const googleSignOutBtn = document.getElementById("googleSignOutBtn");
-
+    const 
     function formatDose(uSv) {
       if (uSv >= 1000) return (uSv / 1000).toFixed(2) + " mSv";
       return uSv.toFixed(1) + " µSv";
@@ -586,9 +534,7 @@
         doseUSv: selected.doseUSv,
         quantity: quantity,
         totalUSv: selected.doseUSv * quantity,
-        date: new Date().toISOString(),
-        userEmail: currentUser ? currentUser.email : "guest",
-        userName: currentUser ? currentUser.name : "Guest"
+        date: new Date().toISOString()
       });
 
       localStorage.setItem("radiationActivityLog", JSON.stringify(log));
@@ -646,7 +592,7 @@
           <div>
             <div class="log-title">${escapeHtml(item.name)}</div>
             <span class="pill">${escapeHtml(item.category)} · ${formatDose(item.doseUSv)} ${escapeHtml(item.unit)}</span>
-            <div class="small">${new Date(item.date).toLocaleString()} · ${escapeHtml(item.userName || "Guest")}</div>
+            <div class="small">${new Date(item.date).toLocaleString()}</div>
           </div>
           <div>
             <strong>${item.quantity}</strong>
@@ -671,78 +617,6 @@
     }
 
 
-    function parseJwt(token) {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function(c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-      return JSON.parse(jsonPayload);
-    }
-
-    function handleGoogleCredentialResponse(response) {
-      const profile = parseJwt(response.credential);
-
-      currentUser = {
-        name: profile.name,
-        email: profile.email,
-        picture: profile.picture
-      };
-
-      localStorage.setItem("radiationGoogleUser", JSON.stringify(currentUser));
-      renderGoogleUser();
-    }
-
-    function initializeGoogleLogin() {
-      if (!window.google || !google.accounts || !google.accounts.id) {
-        return;
-      }
-
-      google.accounts.id.initialize({
-        client_id: "366602380707-6ng4b08irn4if2ps5kfnpd6084s6ugaa.apps.googleusercontent.com",
-        callback: handleGoogleCredentialResponse
-      });
-
-      google.accounts.id.renderButton(
-        document.getElementById("googleSignInButton"),
-        {
-          theme: "outline",
-          size: "large",
-          shape: "pill",
-          text: "signin_with"
-        }
-      );
-
-      renderGoogleUser();
-    }
-
-    function renderGoogleUser() {
-      const signInButton = document.getElementById("googleSignInButton");
-
-      if (currentUser) {
-        userName.textContent = currentUser.name || currentUser.email;
-        userPhoto.src = currentUser.picture || "";
-        userChip.style.display = "inline-flex";
-        googleSignOutBtn.style.display = "inline-block";
-        signInButton.style.display = "none";
-      } else {
-        userChip.style.display = "none";
-        googleSignOutBtn.style.display = "none";
-        signInButton.style.display = "block";
-      }
-    }
-
-    function signOutGoogle() {
-      currentUser = null;
-      localStorage.removeItem("radiationGoogleUser");
-      renderGoogleUser();
-    }
-
     function render() {
       renderSummary();
       renderLog();
@@ -752,12 +626,9 @@
     document.getElementById("addBtn").addEventListener("click", addActivity);
     document.getElementById("resetBtn").addEventListener("click", resetLog);
 
-    googleSignOutBtn.addEventListener("click", signOutGoogle);
-    window.addEventListener("load", initializeGoogleLogin);
-
+        
     loadActivities();
     render();
-    renderGoogleUser();
-  </script>
+      </script>
 </body>
 </html>
