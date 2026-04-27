@@ -288,13 +288,27 @@
         }
 
         logContainer.innerHTML = logs.length ? logs.map(item => `
-            <div class="log-item">
-                <div><strong>${item.name}</strong><br><span class="small">${new Date(item.date).toLocaleDateString()}</span></div>
-                <div>${item.quantity} units</div>
-                <div>${item.totalUSv} µSv</div>
-                <button class="danger" onclick="deleteItem('${item.id}')">×</button>
+    <div class="log-item">
+        <div>
+            <div style="font-weight:900;">${item.name}</div>
+            <div class="small">
+                📅 ${new Date(item.date).toLocaleDateString()} | ⏱ ${new Date(item.date).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
             </div>
-        `).join("") : '<div class="empty">No activities logged yet.</div>';
+        </div>
+
+        <div>
+            <div style="font-weight:900;">${item.quantity}</div>
+            <div class="small">quantity</div>
+        </div>
+
+        <div>
+            <div style="font-weight:900;">${item.totalUSv} µSv</div>
+            <div class="small">dose</div>
+        </div>
+
+        <button class="danger" onclick="deleteItem('${item.id}')">×</button>
+    </div>
+`).join("") : '<div class="empty">No activities logged yet.</div>';
         
         document.getElementById("statusBox").textContent = total < 1000 ? "Healthy range." : "Limit reached.";
     }
