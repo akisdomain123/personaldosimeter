@@ -245,109 +245,8 @@
         font-size: 34px;
       }
     }
-
-    /* Mobile improvements */
-    @media (max-width: 700px) {
-      body {
-        font-size: 16px;
-      }
-
-      .container {
-        padding: 18px 12px;
-      }
-
-      .badge {
-        font-size: 12px;
-        padding: 5px 10px;
-      }
-
-      h1 {
-        font-size: 30px;
-        line-height: 1.1;
-      }
-
-      h2 {
-        font-size: 20px;
-      }
-
-      .card {
-        border-radius: 16px;
-        padding: 16px;
-      }
-
-      .big-number {
-        font-size: 30px;
-      }
-
-      input, select, button {
-        min-height: 46px;
-        font-size: 16px;
-      }
-
-      button {
-        width: 100%;
-      }
-
-      .button-row {
-        flex-direction: column;
-      }
-
-      .progress-wrap {
-        height: 16px;
-      }
-
-      .activity-info {
-        font-size: 15px;
-      }
-
-      .log-item {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-
-      .log-item button {
-        width: 100%;
-        margin-top: 6px;
-      }
-
-      .pill {
-        line-height: 1.4;
-      }
-
-      .hero,
-      .main-grid,
-      .limit-grid {
-        gap: 14px;
-      }
-    }
-
-    @media (max-width: 420px) {
-      h1 {
-        font-size: 27px;
-      }
-
-      .container {
-        padding: 14px 10px;
-      }
-
-      .card {
-        padding: 14px;
-      }
-    }
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
   </style>
-  </head>
+</head>
 <body>
   <main class="container">
     <span class="badge">Radiation dose monitor</span>
@@ -368,9 +267,6 @@
         <div id="statusBox" class="status low">Below yearly public guidance.</div>
       </div>
     </section>
-
-
-    
 
     <section class="grid limit-grid">
       <div class="card limit-card">
@@ -425,36 +321,7 @@
         Do not use this as a medical device or regulatory dosimeter.
       </p>
     </section>
-  
-<section class="card" style="margin-top:20px;">
-  <h2>Why use this?</h2>
-  <p><strong>Are you tracking your radiation exposure? You should be.</strong></p>
-
-  <p>Every year, millions of people undergo X-rays, CT scans, and even full-body DEXA scans—often without realizing how much radiation they’re accumulating over time.</p>
-
-  <p><strong>The truth? Most patients don’t understand:</strong></p>
-  <ul>
-    <li>How much radiation each test exposes them to</li>
-    <li>What the safe limits are</li>
-    <li>When they might be going beyond what’s necessary</li>
-  </ul>
-
-  <p><strong>That’s where MyRadiationTracker comes in.</strong></p>
-
-  <p>👉 <strong>Track your exposure</strong><br>
-  Log every scan—X-rays, CTs, DEXA, and more—and see your cumulative radiation in one place.</p>
-
-  <p>👉 <strong>Know your limits</strong><br>
-  Instantly understand whether you’re within safe exposure levels, based on global medical guidelines.</p>
-
-  <p>👉 <strong>Make informed decisions</strong><br>
-  Before your next scan, check your history and have smarter conversations with your doctor.</p>
-
-  <p>👉 <strong>Avoid unnecessary tests</strong><br>
-  Many people unknowingly repeat scans or opt for “routine” imaging that may not be needed.</p>
-</section>
-
-</main>
+  </main>
 
   <script>
     const ANNUAL_PUBLIC_LIMIT_USV = 1000;
@@ -481,7 +348,7 @@
     ];
 
     let log = JSON.parse(localStorage.getItem("radiationActivityLog") || "[]");
-    
+
     const activitySelect = document.getElementById("activitySelect");
     const quantityInput = document.getElementById("quantityInput");
     const activityInfo = document.getElementById("activityInfo");
@@ -490,9 +357,7 @@
     const totalMSv = document.getElementById("totalMSv");
     const progressBar = document.getElementById("progressBar");
     const statusBox = document.getElementById("statusBox");
-        const userPhoto = document.getElementById("userPhoto");
-    const userName = document.getElementById("userName");
-    const 
+
     function formatDose(uSv) {
       if (uSv >= 1000) return (uSv / 1000).toFixed(2) + " mSv";
       return uSv.toFixed(1) + " µSv";
@@ -616,7 +481,6 @@
         .replaceAll("'", "&#039;");
     }
 
-
     function render() {
       renderSummary();
       renderLog();
@@ -626,9 +490,8 @@
     document.getElementById("addBtn").addEventListener("click", addActivity);
     document.getElementById("resetBtn").addEventListener("click", resetLog);
 
-        
     loadActivities();
     render();
-      </script>
+  </script>
 </body>
 </html>
