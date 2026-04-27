@@ -29,166 +29,54 @@
     }
 
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at top left, #dbeafe 0, transparent 34%),
-        radial-gradient(circle at top right, #ede9fe 0, transparent 30%),
-        linear-gradient(180deg, #eef2ff, var(--bg));
+      background: radial-gradient(circle at top left, #dbeafe 0, transparent 34%), radial-gradient(circle at top right, #ede9fe 0, transparent 30%), linear-gradient(180deg, #eef2ff, var(--bg));
       color: var(--text);
       min-height: 100vh;
     }
 
-    .container {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 28px 16px 42px;
-    }
+    .container { max-width: 1120px; margin: 0 auto; padding: 28px 16px 42px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 18px; letter-spacing: -0.03em; }
+    .brand-icon { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; color: white; background: linear-gradient(135deg, var(--primary), #06b6d4); box-shadow: var(--shadow); }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
+    /* Auth UI Styles */
+    .auth-container { display: flex; align-items: center; gap: 12px; }
+    .user-profile { display: none; align-items: center; gap: 12px; background: white; padding: 6px 16px 6px 6px; border-radius: 999px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .user-profile img { width: 32px; height: 32px; border-radius: 50%; }
+    .signout-btn { background: #f1f5f9; color: #64748b; font-size: 12px; padding: 6px 12px; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; font-weight: 700; transition: all 0.2s; }
+    .signout-btn:hover { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 900;
-      font-size: 18px;
-      letter-spacing: -0.03em;
-    }
-
-    .brand-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      color: white;
-      background: linear-gradient(135deg, var(--primary), #06b6d4);
-      box-shadow: var(--shadow);
-    }
-
-    .auth-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .user-profile {
-      display: none; /* Hidden until login */
-      align-items: center;
-      gap: 8px;
-      background: white;
-      padding: 4px 12px 4px 4px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-    }
-
-    .user-profile img {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: rgba(79, 70, 229, 0.10);
-      color: var(--primary-dark);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
+    .badge { display: inline-block; padding: 7px 12px; border-radius: 999px; background: rgba(79, 70, 229, 0.10); color: var(--primary-dark); font-size: 13px; font-weight: 800; }
     h1 { margin: 14px 0 10px; font-size: 46px; line-height: 1.02; letter-spacing: -0.05em; }
     h2 { margin: 0 0 14px; font-size: 22px; letter-spacing: -0.02em; }
-    h3 { margin: 0 0 8px; font-size: 17px; letter-spacing: -0.02em; }
     p { color: #475569; line-height: 1.55; margin: 0 0 12px; }
-    ul { color: #475569; line-height: 1.7; margin-top: 0; }
-
     .grid { display: grid; gap: 18px; }
     .hero { grid-template-columns: 1.12fr 0.88fr; align-items: stretch; }
-
-    .card {
-      background: rgba(255, 255, 255, 0.94);
-      border: 1px solid rgba(226, 232, 240, 0.95);
-      border-radius: 26px;
-      padding: 24px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-    }
-
+    .card { background: rgba(255, 255, 255, 0.94); border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 26px; padding: 24px; box-shadow: var(--shadow); backdrop-filter: blur(12px); }
     .summary-card { display: flex; flex-direction: column; justify-content: center; }
     .big-number { font-size: 44px; font-weight: 950; margin: 6px 0; letter-spacing: -0.04em; }
     .small { font-size: 13px; color: var(--muted); }
-    .lead { font-size: 18px; max-width: 650px; }
-
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin: 14px 0 7px;
-      color: #334155;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
+    .progress-label { display: flex; justify-content: space-between; margin: 14px 0 7px; color: #334155; font-size: 13px; font-weight: 800; }
     .progress-wrap { height: 14px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
     .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), #06b6d4); transition: width 0.2s ease; }
     .progress-bar.worker { background: linear-gradient(90deg, #7c3aed, #ec4899); }
-
-    .status { border-radius: 16px; padding: 13px; margin-top: 14px; font-weight: 800; line-height: 1.35; }
-    .status.low { background: var(--green-bg); border: 1px solid var(--green-border); color: #14532d; }
-    .status.medium { background: var(--amber-bg); border: 1px solid var(--amber-border); color: #78350f; }
-    .status.high { background: var(--red-bg); border: 1px solid var(--red-border); color: #7f1d1d; }
-
-    .add-card { margin-top: 20px; display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 20px; align-items: start; }
+    .status { border-radius: 16px; padding: 13px; margin-top: 14px; font-weight: 800; }
+    .status.low { background: var(--green-bg); color: #14532d; }
+    .status.medium { background: var(--amber-bg); color: #78350f; }
+    .status.high { background: var(--red-bg); color: #7f1d1d; }
+    .add-card { margin-top: 20px; display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 20px; }
     label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 800; color: #334155; }
-    input, select, button { font: inherit; }
-    input, select { width: 100%; padding: 13px 14px; border: 1px solid #cbd5e1; border-radius: 16px; background: white; outline: none; }
-    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12); }
-
-    button { border: 0; border-radius: 16px; padding: 13px 16px; background: var(--primary); color: white; cursor: pointer; font-weight: 900; box-shadow: 0 10px 24px rgba(79, 70, 229, 0.22); }
-    button.secondary { background: #e2e8f0; color: var(--text); box-shadow: none; }
-    button.danger { background: #991b1b; box-shadow: none; }
-    button:hover { transform: translateY(-1px); opacity: 0.95; }
-
-    .button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
-    .activity-detail { border-radius: 22px; padding: 18px; background: linear-gradient(135deg, #f8fafc, #eef2ff); border: 1px solid #dbeafe; }
-    .category-pill { display: inline-flex; padding: 7px 11px; border-radius: 999px; background: white; color: var(--primary-dark); border: 1px solid #c7d2fe; font-size: 13px; font-weight: 900; }
-    .detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
-    .detail-tile { background: white; border: 1px solid var(--border); border-radius: 18px; padding: 14px; }
-    .detail-value { font-size: 20px; font-weight: 950; margin-top: 4px; letter-spacing: -0.03em; }
-    .guidance { margin-top: 14px; padding: 14px; border-radius: 18px; background: white; border: 1px solid var(--border); color: #334155; line-height: 1.5; }
-
-    .limit-grid { grid-template-columns: repeat(3, 1fr); margin-top: 20px; }
-    .limit-card { background: var(--green-bg); border-color: var(--green-border); }
-    .limit-card.child { background: var(--blue-bg); border-color: var(--blue-border); }
-    .limit-card.medical { background: var(--amber-bg); border-color: var(--amber-border); }
-    .worker-card { background: var(--purple-bg); border-color: var(--purple-border); }
-    .worker-card.max { background: #fff7ed; border-color: #fed7aa; }
-    .worker-card.note { background: #f1f5f9; border-color: #cbd5e1; }
-
-    .log-card, .disclaimer, .marketing { margin-top: 20px; }
+    input, select { width: 100%; padding: 13px 14px; border: 1px solid #cbd5e1; border-radius: 16px; }
+    button { border: 0; border-radius: 16px; padding: 13px 16px; background: var(--primary); color: white; cursor: pointer; font-weight: 900; }
+    button.secondary { background: #e2e8f0; color: var(--text); }
+    button.danger { background: #991b1b; padding: 8px 12px; }
     .log-item { display: grid; grid-template-columns: 1fr 110px 140px 44px; gap: 12px; align-items: center; border: 1px solid var(--border); border-radius: 20px; padding: 14px; margin-bottom: 12px; background: white; }
-    .log-title { font-weight: 950; letter-spacing: -0.02em; }
-    .pill { display: inline-block; margin-top: 6px; padding: 5px 10px; border-radius: 999px; background: var(--soft); color: #334155; font-size: 12px; font-weight: 800; }
     .empty { color: var(--muted); background: var(--soft); padding: 16px; border-radius: 18px; text-align: center; }
-    .disclaimer { background: var(--amber-bg); border-color: var(--amber-border); }
-    .marketing { background: linear-gradient(135deg, white, #eef2ff); }
-
-    @media (max-width: 850px) {
-      .hero, .add-card, .limit-grid, .log-item { grid-template-columns: 1fr; }
-      h1 { font-size: 34px; }
-      .detail-grid { grid-template-columns: 1fr; }
-    }
+    
+    @media (max-width: 850px) { .hero, .add-card, .log-item { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -203,6 +91,7 @@
         <div id="userProfile" class="user-profile">
           <img id="userImg" src="" alt="Profile">
           <span id="userName" class="small" style="font-weight: 800;"></span>
+          <button class="signout-btn" onclick="signOut()">Sign Out</button>
         </div>
         
         <div id="g_id_onload"
@@ -210,270 +99,174 @@
              data-callback="handleCredentialResponse"
              data-auto_prompt="false">
         </div>
-        <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
-        <span class="badge">Exposure awareness</span>
+        <div id="googleBtnWrapper" class="g_id_signin" data-type="standard" data-shape="pill"></div>
       </div>
     </div>
 
     <section class="grid hero">
       <div class="card">
-        <span class="badge">Radiation dose monitor</span>
-        <h1>Track radiation exposure from scans, flights, radon, and work.</h1>
-        <p class="lead">Select an activity, add it to your log, and compare your estimated dose against public and occupational benchmarks.</p>
+        <span class="badge">Dose Monitor</span>
+        <h1>Track your lifetime radiation exposure.</h1>
+        <p>Login to save your personal logs and compare them to global safety standards.</p>
       </div>
 
       <div class="card summary-card">
         <div class="small">Total estimated dose</div>
         <div id="totalDose" class="big-number">0 µSv</div>
         <div id="totalMSv" class="small">0.000 mSv</div>
-
-        <div class="progress-label">
-          <span>Public benchmark progress</span>
-          <span id="publicPercent">0%</span>
-        </div>
-        <div class="progress-wrap">
-          <div id="progressBar" class="progress-bar"></div>
-        </div>
-
-        <div class="progress-label">
-          <span>Worker annual limit progress</span>
-          <span id="workerPercent">0%</span>
-        </div>
-        <div class="progress-wrap">
-          <div id="workerProgressBar" class="progress-bar worker"></div>
-        </div>
-
-        <div id="statusBox" class="status low">Below yearly public guidance.</div>
-        <div id="workerComparison" class="small" style="margin-top:10px;"></div>
+        <div class="progress-label"><span>Public Limit (1mSv)</span><span id="publicPercent">0%</span></div>
+        <div class="progress-wrap"><div id="progressBar" class="progress-bar"></div></div>
+        <div class="progress-label"><span>Worker Limit (20mSv)</span><span id="workerPercent">0%</span></div>
+        <div class="progress-wrap"><div id="workerProgressBar" class="progress-bar worker"></div></div>
+        <div id="statusBox" class="status low">Please login to see your log.</div>
       </div>
     </section>
 
     <section class="card add-card">
       <div>
         <h2>Add activity</h2>
-        <label for="activitySelect">Activity</label>
+        <label>Activity</label>
         <select id="activitySelect"></select>
         <br><br>
-        <label for="quantityInput">Quantity</label>
-        <input id="quantityInput" type="number" min="0" step="0.1" value="1" />
-        <div class="button-row">
-          <button id="addBtn">Add activity</button>
-          <button id="resetBtn" class="secondary">Reset log</button>
+        <label>Quantity</label>
+        <input id="quantityInput" type="number" min="0" step="1" value="1" />
+        <div style="margin-top:20px; display:flex; gap:10px;">
+          <button id="addBtn">Add to Log</button>
+          <button id="resetBtn" class="secondary">Clear All</button>
         </div>
       </div>
-      <div id="activityInfo" class="activity-detail"></div>
+      <div id="activityInfo" class="card" style="background:var(--soft); box-shadow:none; border:none;">
+        <p>Select an activity to see dose details.</p>
+      </div>
     </section>
 
-    <section class="card log-card">
-      <h2>Activity log</h2>
+    <section class="card">
+      <h2>Your Activity Log</h2>
       <div id="activityLog"></div>
-    </section>
-
-    <section class="card disclaimer">
-      <h2>Important disclaimer</h2>
-      <p>Educational estimator. Dose varies by equipment, body size, and protocol. Not a medical device.</p>
-    </section>
-
-    <section class="grid limit-grid">
-      <div class="card limit-card">
-        <h2>Adult yearly guidance</h2>
-        <div class="big-number">1 mSv</div>
-        <p>Recommended public exposure benchmark per year.</p>
-      </div>
-      <div class="card limit-card child">
-        <h2>Child yearly guidance</h2>
-        <div class="big-number">≤ 1 mSv</div>
-        <p>Keep as low as reasonably achievable for non-medical exposure.</p>
-      </div>
-      <div class="card limit-card medical">
-        <h2>Medical radiation</h2>
-        <div class="big-number">Doctor-led</div>
-        <p>Medical scans can exceed 1 mSv when clinically necessary.</p>
-      </div>
-    </section>
-
-    <section class="grid limit-grid">
-      <div class="card worker-card">
-        <h2>Worker annual limit</h2>
-        <div class="big-number">20 mSv</div>
-        <p>Occupational exposure limit, averaged over 5 years.</p>
-      </div>
-      <div class="card worker-card max">
-        <h2>Single-year max</h2>
-        <div class="big-number">50 mSv</div>
-        <p>Maximum occupational exposure in a single year.</p>
-      </div>
-      <div class="card worker-card note">
-        <h2>Worker context</h2>
-        <div class="big-number">Monitored</div>
-        <p>Official workers should use their provided dosimeters.</p>
-      </div>
     </section>
   </main>
 
   <script>
     const PUBLIC_LIMIT_USV = 1000;
     const WORKER_LIMIT_USV = 20000;
-    const WORKER_SINGLE_YEAR_MAX_USV = 50000;
+    let currentUser = null; // Stores user profile and ID (sub)
 
-    // 3. SSO Callback & Helper
+    // 1. AUTH LOGIC
     function handleCredentialResponse(response) {
         const payload = parseJwt(response.credential);
+        currentUser = payload;
         
-        // Update UI
-        document.querySelector(".g_id_signin").style.display = "none";
-        const profile = document.getElementById("userProfile");
-        profile.style.display = "flex";
+        // UI Updates
+        document.getElementById("googleBtnWrapper").style.display = "none";
+        document.getElementById("userProfile").style.display = "flex";
         document.getElementById("userName").textContent = payload.given_name;
         document.getElementById("userImg").src = payload.picture;
         
-        console.log("Logged in as:", payload.email);
+        render(); // Reload log for this specific user
+    }
+
+    function signOut() {
+        currentUser = null;
+        document.getElementById("googleBtnWrapper").style.display = "block";
+        document.getElementById("userProfile").style.display = "none";
+        render(); // Clear view
     }
 
     function parseJwt(token) {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
         return JSON.parse(jsonPayload);
     }
 
-    // Original App Logic
+    // 2. DATA LOGIC
     const activities = [
-      { name: "Dental X-ray", doseUSv: 5, unit: "per event", category: "Medical", details: "Low-dose dental imaging.", guidance: "Very small contribution." },
-      { name: "Chest X-ray", doseUSv: 100, unit: "per event", category: "Medical", details: "Imaging for lungs/heart.", guidance: "Standard diagnostic dose." },
-      { name: "CT head", doseUSv: 2000, unit: "per event", category: "Medical", details: "CT imaging of the head.", guidance: "Higher than standard X-ray." },
-      { name: "CT chest", doseUSv: 7000, unit: "per event", category: "Medical", details: "CT imaging of the chest.", guidance: "Meaningful dose." },
-      { name: "Long-haul flight: 12 hours", doseUSv: 42, unit: "per flight", category: "Travel", details: "Cosmic radiation at altitude.", guidance: "Adds up for frequent flyers." },
-      { name: "Background radiation: 1 day", doseUSv: 8.2, unit: "per day", category: "Environment", details: "Natural sources.", guidance: "Constant and unavoidable." },
-      { name: "Working in nuclear plant: 1 day", doseUSv: 10, unit: "per day", category: "Occupational", details: "Monitored environment.", guidance: "Use official dosimeter." }
+      { name: "Dental X-ray", doseUSv: 5, category: "Medical" },
+      { name: "Chest X-ray", doseUSv: 100, category: "Medical" },
+      { name: "CT head", doseUSv: 2000, category: "Medical" },
+      { name: "Long-haul flight", doseUSv: 42, category: "Travel" },
+      { name: "Daily Background", doseUSv: 8.2, category: "Environment" }
     ];
 
-    let log = JSON.parse(localStorage.getItem("radiationActivityLog") || "[]");
-
-    const activitySelect = document.getElementById("activitySelect");
-    const quantityInput = document.getElementById("quantityInput");
-    const activityInfo = document.getElementById("activityInfo");
-    const activityLog = document.getElementById("activityLog");
-    const totalDose = document.getElementById("totalDose");
-    const totalMSv = document.getElementById("totalMSv");
-    const progressBar = document.getElementById("progressBar");
-    const workerProgressBar = document.getElementById("workerProgressBar");
-    const publicPercent = document.getElementById("publicPercent");
-    const workerPercent = document.getElementById("workerPercent");
-    const statusBox = document.getElementById("statusBox");
-    const workerComparison = document.getElementById("workerComparison");
-
-    function formatDose(uSv) {
-      if (uSv >= 1000) return (uSv / 1000).toFixed(2) + " mSv";
-      return uSv.toFixed(1) + " µSv";
+    function getLogs() {
+        const allLogs = JSON.parse(localStorage.getItem("rad_logs") || "[]");
+        if (!currentUser) return [];
+        // Filter logs belonging only to the signed-in user ID (sub)
+        return allLogs.filter(log => log.userId === currentUser.sub);
     }
 
-    function loadActivities() {
-      activitySelect.innerHTML = activities.map((activity, index) => {
-        return `<option value="${index}">${activity.category} — ${activity.name}</option>`;
-      }).join("");
-      updateActivityInfo();
+    function saveLog(newItem) {
+        if (!currentUser) {
+            alert("Please sign in to save data!");
+            return;
+        }
+        const allLogs = JSON.parse(localStorage.getItem("rad_logs") || "[]");
+        newItem.userId = currentUser.sub; // Attach user ID
+        allLogs.push(newItem);
+        localStorage.setItem("rad_logs", JSON.stringify(allLogs));
+        render();
     }
 
-    function updateActivityInfo() {
-      const selected = activities[Number(activitySelect.value)];
-      const quantity = Number(quantityInput.value || 0);
-      const projectedDose = selected.doseUSv * quantity;
-
-      activityInfo.innerHTML = `
-        <span class="category-pill">${selected.category}</span>
-        <h2 style="margin-top:14px;">${selected.name}</h2>
-        <p>${selected.details}</p>
-        <div class="detail-grid">
-          <div class="detail-tile">
-            <div class="small">Base dose</div>
-            <div class="detail-value">${formatDose(selected.doseUSv)}</div>
-          </div>
-          <div class="detail-tile">
-            <div class="small">Quantity</div>
-            <div class="detail-value">${quantity}</div>
-          </div>
-          <div class="detail-tile">
-            <div class="small">Impact</div>
-            <div class="detail-value">${((projectedDose / PUBLIC_LIMIT_USV) * 100).toFixed(1)}%</div>
-            <div class="small">of limit</div>
-          </div>
-        </div>
-        <div class="guidance"><strong>Advice:</strong> ${selected.guidance}</div>
-      `;
-    }
-
-    function addActivity() {
-      const selected = activities[Number(activitySelect.value)];
-      const quantity = Number(quantityInput.value || 0);
-      if (quantity <= 0) return;
-
-      log.push({
-        id: Math.random().toString(36).substr(2, 9),
-        name: selected.name,
-        category: selected.category,
-        unit: selected.unit,
-        doseUSv: selected.doseUSv,
-        quantity: quantity,
-        totalUSv: selected.doseUSv * quantity,
-        date: new Date().toISOString()
-      });
-
-      localStorage.setItem("radiationActivityLog", JSON.stringify(log));
-      render();
-    }
-
-    function removeActivity(id) {
-      log = log.filter(item => item.id !== id);
-      localStorage.setItem("radiationActivityLog", JSON.stringify(log));
-      render();
-    }
-
-    function resetLog() {
-      if (!confirm("Clear log?")) return;
-      log = [];
-      localStorage.removeItem("radiationActivityLog");
-      render();
-    }
-
+    // 3. UI RENDER LOGIC
     function render() {
-      const total = log.reduce((sum, item) => sum + item.totalUSv, 0);
-      const publicPct = Math.min((total / PUBLIC_LIMIT_USV) * 100, 100);
-      const workerPct = Math.min((total / WORKER_LIMIT_USV) * 100, 100);
+        const logs = getLogs();
+        const total = logs.reduce((sum, item) => sum + item.totalUSv, 0);
+        
+        // Update Numbers
+        document.getElementById("totalDose").textContent = total >= 1000 ? (total/1000).toFixed(2) + " mSv" : total.toFixed(1) + " µSv";
+        document.getElementById("totalMSv").textContent = (total / 1000).toFixed(3) + " mSv";
+        
+        // Update Bars
+        const pubPct = Math.min((total / PUBLIC_LIMIT_USV) * 100, 100);
+        const wrkPct = Math.min((total / WORKER_LIMIT_USV) * 100, 100);
+        document.getElementById("progressBar").style.width = pubPct + "%";
+        document.getElementById("workerProgressBar").style.width = wrkPct + "%";
+        document.getElementById("publicPercent").textContent = pubPct.toFixed(1) + "%";
+        document.getElementById("workerPercent").textContent = wrkPct.toFixed(1) + "%";
 
-      totalDose.textContent = formatDose(total);
-      totalMSv.textContent = (total / 1000).toFixed(3) + " mSv";
-      progressBar.style.width = publicPct + "%";
-      workerProgressBar.style.width = workerPct + "%";
-      publicPercent.textContent = ((total / PUBLIC_LIMIT_USV) * 100).toFixed(1) + "%";
-      workerPercent.textContent = ((total / WORKER_LIMIT_USV) * 100).toFixed(1) + "%";
+        // Update Log Table
+        const logContainer = document.getElementById("activityLog");
+        if (!currentUser) {
+            logContainer.innerHTML = '<div class="empty">Sign in to view your records.</div>';
+            document.getElementById("statusBox").textContent = "Login required.";
+            return;
+        }
 
-      // Status Box Update
-      statusBox.className = "status " + (total < 500 ? "low" : total < 1000 ? "medium" : "high");
-      statusBox.textContent = total < 1000 ? "Within public benchmark." : "Above public benchmark.";
-
-      // Log Render
-      activityLog.innerHTML = log.length ? log.map(item => `
-        <div class="log-item">
-          <div>
-            <div class="log-title">${item.name}</div>
-            <span class="pill">${item.category} · ${formatDose(item.doseUSv)}</span>
-          </div>
-          <div><strong>${item.quantity}</strong></div>
-          <div><strong>${formatDose(item.totalUSv)}</strong></div>
-          <button class="danger" onclick="removeActivity('${item.id}')">×</button>
-        </div>
-      `).join("") : '<div class="empty">No activities logged.</div>';
+        logContainer.innerHTML = logs.length ? logs.map(item => `
+            <div class="log-item">
+                <div><strong>${item.name}</strong><br><span class="small">${new Date(item.date).toLocaleDateString()}</span></div>
+                <div>${item.quantity} units</div>
+                <div>${item.totalUSv} µSv</div>
+                <button class="danger" onclick="deleteItem('${item.id}')">×</button>
+            </div>
+        `).join("") : '<div class="empty">No activities logged yet.</div>';
+        
+        document.getElementById("statusBox").textContent = total < 1000 ? "Healthy range." : "Limit reached.";
     }
 
-    activitySelect.addEventListener("change", updateActivityInfo);
-    quantityInput.addEventListener("input", updateActivityInfo);
-    document.getElementById("addBtn").addEventListener("click", addActivity);
-    document.getElementById("resetBtn").addEventListener("click", resetLog);
+    function deleteItem(id) {
+        let allLogs = JSON.parse(localStorage.getItem("rad_logs") || "[]");
+        allLogs = allLogs.filter(log => log.id !== id);
+        localStorage.setItem("rad_logs", JSON.stringify(allLogs));
+        render();
+    }
 
-    loadActivities();
+    // Initialization
+    const select = document.getElementById("activitySelect");
+    select.innerHTML = activities.map((a, i) => `<option value="${i}">${a.name}</option>`).join("");
+
+    document.getElementById("addBtn").onclick = () => {
+        const activity = activities[select.value];
+        const qty = parseFloat(document.getElementById("quantityInput").value);
+        saveLog({
+            id: Math.random().toString(36).substr(2, 9),
+            name: activity.name,
+            totalUSv: activity.doseUSv * qty,
+            quantity: qty,
+            date: new Date().toISOString()
+        });
+    };
+
     render();
   </script>
 </body>
