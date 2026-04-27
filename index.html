@@ -245,6 +245,96 @@
         font-size: 34px;
       }
     }
+
+    /* Mobile improvements */
+    @media (max-width: 700px) {
+      body {
+        font-size: 16px;
+      }
+
+      .container {
+        padding: 18px 12px;
+      }
+
+      .badge {
+        font-size: 12px;
+        padding: 5px 10px;
+      }
+
+      h1 {
+        font-size: 30px;
+        line-height: 1.1;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .card {
+        border-radius: 16px;
+        padding: 16px;
+      }
+
+      .big-number {
+        font-size: 30px;
+      }
+
+      input, select, button {
+        min-height: 46px;
+        font-size: 16px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .button-row {
+        flex-direction: column;
+      }
+
+      .progress-wrap {
+        height: 16px;
+      }
+
+      .activity-info {
+        font-size: 15px;
+      }
+
+      .log-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .log-item button {
+        width: 100%;
+        margin-top: 6px;
+      }
+
+      .pill {
+        line-height: 1.4;
+      }
+
+      .hero,
+      .main-grid,
+      .limit-grid {
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      h1 {
+        font-size: 27px;
+      }
+
+      .container {
+        padding: 14px 10px;
+      }
+
+      .card {
+        padding: 14px;
+      }
+    }
+
   </style>
 </head>
 <body>
