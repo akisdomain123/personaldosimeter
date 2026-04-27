@@ -3,19 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Personal Dosimeter</title>
+  <title>Radiation Activity Dose Monitor</title>
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       background: #f8fafc;
       color: #0f172a;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     .container {
-      max-width: 1150px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 32px 16px;
+      padding: 28px 16px;
     }
 
     .badge {
@@ -24,12 +28,12 @@
       border-radius: 999px;
       background: #e2e8f0;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     h1 {
-      font-size: 44px;
       margin: 14px 0 8px;
+      font-size: 42px;
       line-height: 1.05;
     }
 
@@ -45,63 +49,85 @@
 
     .grid {
       display: grid;
-      gap: 20px;
+      gap: 18px;
     }
 
-    .hero-grid {
-      grid-template-columns: 1.4fr 0.6fr;
+    .hero {
+      grid-template-columns: 1.35fr 0.65fr;
       align-items: end;
     }
 
     .main-grid {
       grid-template-columns: 0.9fr 1.1fr;
+      margin-top: 18px;
+    }
+
+    .limit-grid {
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 18px;
     }
 
     .card {
-      background: white;
+      background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 20px;
       padding: 22px;
       box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
     }
 
-    .total-card {
-      background: white;
+    .limit-card {
+      background: #dcfce7;
+      border-color: #bbf7d0;
     }
 
-    .total-dose {
-      font-size: 38px;
-      font-weight: 800;
-      margin-top: 6px;
+    .limit-card.child {
+      background: #eff6ff;
+      border-color: #bfdbfe;
     }
 
-    input, select, textarea, button {
+    .limit-card.medical {
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+
+    .big-number {
+      font-size: 36px;
+      font-weight: 900;
+      margin: 6px 0;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, select, button {
       font: inherit;
     }
 
-    input, select, textarea {
+    input, select {
       width: 100%;
-      box-sizing: border-box;
+      padding: 11px 12px;
       border: 1px solid #cbd5e1;
       border-radius: 12px;
-      padding: 10px 12px;
       background: white;
-    }
-
-    textarea {
-      min-height: 220px;
-      font-family: monospace;
-      font-size: 13px;
     }
 
     button {
       border: 0;
       border-radius: 12px;
-      padding: 10px 14px;
+      padding: 11px 15px;
       background: #0f172a;
       color: white;
       cursor: pointer;
-      font-weight: 700;
+      font-weight: 800;
     }
 
     button.secondary {
@@ -109,100 +135,109 @@
       color: #0f172a;
     }
 
-    button.ghost {
-      background: transparent;
-      color: #0f172a;
-      border: 1px solid #cbd5e1;
+    button.danger {
+      background: #991b1b;
     }
 
     button:hover {
-      opacity: 0.9;
+      opacity: 0.92;
     }
 
     .button-row {
       display: flex;
-      gap: 10px;
       flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .progress-wrap {
+      height: 14px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
       margin-top: 12px;
     }
 
-    .message {
-      background: #f1f5f9;
-      border-radius: 14px;
-      padding: 12px;
-      font-size: 14px;
-      color: #334155;
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #0f172a;
+      transition: width 0.2s ease;
     }
 
-    .entry {
+    .status {
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 12px;
+      font-weight: 700;
+    }
+
+    .status.low {
+      background: #dcfce7;
+      border: 1px solid #bbf7d0;
+    }
+
+    .status.medium {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+    }
+
+    .status.high {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+    }
+
+    .activity-info {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    .log-item {
       display: grid;
       grid-template-columns: 1fr 110px 130px 44px;
       gap: 12px;
-      align-items: end;
+      align-items: center;
       border: 1px solid #e2e8f0;
-      border-radius: 18px;
-      padding: 14px;
-      margin-bottom: 12px;
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fff;
     }
 
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 6px;
+    .log-title {
+      font-weight: 800;
     }
 
-    .small {
-      font-size: 12px;
-      color: #64748b;
+    .pill {
+      display: inline-block;
       margin-top: 5px;
-    }
-
-    .dose-pill {
+      padding: 4px 9px;
+      border-radius: 999px;
       background: #f1f5f9;
-      border-radius: 12px;
-      padding: 10px;
+      color: #334155;
+      font-size: 12px;
       font-weight: 700;
     }
 
-    .warning {
+    .empty {
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 14px;
+      border-radius: 14px;
+    }
+
+    .disclaimer {
+      margin-top: 18px;
       background: #fffbeb;
       border-color: #fde68a;
     }
 
-    .history-item {
-      border: 1px solid #e2e8f0;
-      border-radius: 18px;
-      padding: 14px;
-      margin-bottom: 12px;
-      background: white;
-    }
-
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .history-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 14px;
-      color: #475569;
-      margin-top: 6px;
-    }
-
-    .signin-grid {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 14px;
-      align-items: end;
-    }
-
     @media (max-width: 850px) {
-      .hero-grid, .main-grid, .signin-grid, .entry {
+      .hero, .main-grid, .limit-grid, .log-item {
         grid-template-columns: 1fr;
       }
 
@@ -214,390 +249,226 @@
 </head>
 <body>
   <main class="container">
-    <span class="badge">Personal dosimeter</span>
+    <span class="badge">Radiation dose monitor</span>
 
-    <section class="grid hero-grid">
+    <section class="grid hero">
       <div>
-        <h1>Radiation activity dose calculator</h1>
-        <p>Pick activities, enter quantities, and calculate cumulative radiation dose from spreadsheet-backed activity data.</p>
+        <h1>Radiation Activity Dose Monitor</h1>
+        <p>Select an activity, add it to your log, and track estimated radiation dose for the year.</p>
       </div>
 
-      <div class="card total-card">
+      <div class="card">
         <div class="small">Total estimated dose</div>
-        <div id="totalDose" class="total-dose">0 µSv</div>
-        <div id="totalMSv" class="small">0.0000 mSv</div>
-        <p id="doseBand"></p>
+        <div id="totalDose" class="big-number">0 µSv</div>
+        <div id="totalMSv" class="small">0.000 mSv</div>
+        <div class="progress-wrap">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <div id="statusBox" class="status low">Below yearly public guidance.</div>
       </div>
     </section>
 
-    <section class="card" style="margin-top: 20px;">
-      <div class="signin-grid">
-        <div>
-          <h2>Gmail / Google account</h2>
-          <p id="signinText">Prototype sign-in. For production, replace this with real Google OAuth or Firebase Authentication.</p>
-          <input id="emailInput" type="email" placeholder="yourname@gmail.com" />
-        </div>
-        <div class="button-row">
-          <button id="signinBtn">Sign in</button>
-          <button id="signoutBtn" class="ghost" style="display:none;">Sign out</button>
-          <button id="saveHistoryBtn" class="secondary">Save activity</button>
-        </div>
+    <section class="grid limit-grid">
+      <div class="card limit-card">
+        <h2>Adult yearly guidance</h2>
+        <div class="big-number">1 mSv</div>
+        <p>Recommended public exposure benchmark per year, excluding natural background and medically needed procedures.</p>
+      </div>
+
+      <div class="card limit-card child">
+        <h2>Child yearly guidance</h2>
+        <div class="big-number">≤ 1 mSv</div>
+        <p>Children should generally be kept as low as reasonably achievable. Use the same 1 mSv/year benchmark for non-medical extra exposure.</p>
+      </div>
+
+      <div class="card limit-card medical">
+        <h2>Medical radiation</h2>
+        <div class="big-number">Doctor-led</div>
+        <p>Medical scans can exceed 1 mSv when clinically necessary. This app is only an estimate, not medical advice.</p>
       </div>
     </section>
 
-    <section class="grid main-grid" style="margin-top: 20px;">
+    <section class="grid main-grid">
       <div class="card">
-        <h2>Spreadsheet data</h2>
-        <p>Upload a CSV or paste data with headers: <strong>activity,dose_uSv,unit,category</strong></p>
-        <input id="fileInput" type="file" accept=".csv,.txt" />
-        <br /><br />
-        <textarea id="spreadsheetText"></textarea>
+        <h2>Add activity</h2>
+
+        <label for="activitySelect">Activity</label>
+        <select id="activitySelect"></select>
+
+        <div id="activityInfo" class="activity-info"></div>
+
+        <br />
+
+        <label for="quantityInput">Quantity</label>
+        <input id="quantityInput" type="number" min="0" step="0.1" value="1" />
+
         <div class="button-row">
-          <button id="loadTableBtn">Load table</button>
-          <button id="restoreBtn" class="secondary">Restore sample</button>
+          <button id="addBtn">Add activity</button>
+          <button id="resetBtn" class="secondary">Reset log</button>
         </div>
-        <p id="message" class="message">Loaded sample activity data.</p>
       </div>
 
       <div class="card">
-        <h2>Dose log</h2>
-        <div id="entries"></div>
-        <div class="button-row">
-          <button id="addEntryBtn" class="secondary">+ Add activity</button>
-          <button id="exportBtn" class="ghost">Export CSV</button>
-        </div>
+        <h2>Activity log</h2>
+        <div id="activityLog"></div>
       </div>
     </section>
 
-    <section class="card" style="margin-top: 20px;">
-      <h2>Historic activity</h2>
-      <div id="historyList"><p>No saved dose logs yet.</p></div>
-    </section>
-
-    <section class="card warning" style="margin-top: 20px;">
+    <section class="card disclaimer">
       <h2>Important disclaimer</h2>
-      <p>This calculator is an educational estimate and is only as accurate as the spreadsheet data you provide. It is not a medical device, regulatory dosimeter, or substitute for professional radiation-safety guidance.</p>
+      <p>
+        This is an educational estimator. Radiation dose varies by equipment, altitude, route, body size, scan protocol, and other factors.
+        Do not use this as a medical device or regulatory dosimeter.
+      </p>
     </section>
   </main>
 
   <script>
-    const DEFAULT_ACTIVITIES = [
-      { activity: "Dental X-ray", dose_uSv: 5, unit: "per event", category: "Medical" },
-      { activity: "Chest X-ray", dose_uSv: 100, unit: "per event", category: "Medical" },
-      { activity: "Mammogram", dose_uSv: 400, unit: "per event", category: "Medical" },
-      { activity: "CT head", dose_uSv: 2000, unit: "per event", category: "Medical" },
-      { activity: "CT abdomen/pelvis", dose_uSv: 10000, unit: "per event", category: "Medical" },
-      { activity: "Flight: 1 hour", dose_uSv: 3.5, unit: "per hour", category: "Travel" },
-      { activity: "Short flight: 2 hours", dose_uSv: 7, unit: "per flight", category: "Travel" },
-      { activity: "Medium flight: 5 hours", dose_uSv: 17.5, unit: "per flight", category: "Travel" },
-      { activity: "Long-distance flight: 8 hours", dose_uSv: 28, unit: "per flight", category: "Travel" },
-      { activity: "Long-distance flight: 12 hours", dose_uSv: 42, unit: "per flight", category: "Travel" },
-      { activity: "Ultra long-haul flight: 16 hours", dose_uSv: 56, unit: "per flight", category: "Travel" },
-      { activity: "Living at high altitude: Denver", dose_uSv: 0.55, unit: "per day", category: "Environment" },
-      { activity: "Banana", dose_uSv: 0.1, unit: "per banana", category: "Food" },
-      { activity: "Background radiation", dose_uSv: 8.2, unit: "per day", category: "Environment" }
+    const ANNUAL_PUBLIC_LIMIT_USV = 1000;
+
+    const activities = [
+      { name: "Dental X-ray", doseUSv: 5, unit: "per event", category: "Medical" },
+      { name: "Chest X-ray", doseUSv: 100, unit: "per event", category: "Medical" },
+      { name: "Mammogram", doseUSv: 400, unit: "per event", category: "Medical" },
+      { name: "CT head", doseUSv: 2000, unit: "per event", category: "Medical" },
+      { name: "CT abdomen / pelvis", doseUSv: 10000, unit: "per event", category: "Medical" },
+
+      { name: "Flight: 1 hour", doseUSv: 3.5, unit: "per hour", category: "Travel" },
+      { name: "Short-haul flight: 2 hours", doseUSv: 7, unit: "per flight", category: "Travel" },
+      { name: "Short-haul flight: 3 hours", doseUSv: 10.5, unit: "per flight", category: "Travel" },
+      { name: "Medium-haul flight: 5 hours", doseUSv: 17.5, unit: "per flight", category: "Travel" },
+      { name: "Long-haul flight: 8 hours", doseUSv: 28, unit: "per flight", category: "Travel" },
+      { name: "Long-haul flight: 12 hours", doseUSv: 42, unit: "per flight", category: "Travel" },
+      { name: "Ultra long-haul flight: 16 hours", doseUSv: 56, unit: "per flight", category: "Travel" },
+
+      { name: "Banana", doseUSv: 0.1, unit: "per banana", category: "Food" },
+      { name: "Background radiation: 1 day", doseUSv: 8.2, unit: "per day", category: "Environment" },
+      { name: "High altitude living: 1 day", doseUSv: 0.55, unit: "extra per day", category: "Environment" }
     ];
 
-    let activities = [...DEFAULT_ACTIVITIES];
-    let entries = [{ id: makeId(), activity: activities[0].activity, quantity: 1 }];
-    let user = JSON.parse(localStorage.getItem("dosimeterUser") || "null");
-    let history = JSON.parse(localStorage.getItem("dosimeterHistory") || "[]");
+    let log = JSON.parse(localStorage.getItem("radiationActivityLog") || "[]");
 
-    const spreadsheetText = document.getElementById("spreadsheetText");
-    const entriesDiv = document.getElementById("entries");
-    const message = document.getElementById("message");
+    const activitySelect = document.getElementById("activitySelect");
+    const quantityInput = document.getElementById("quantityInput");
+    const activityInfo = document.getElementById("activityInfo");
+    const activityLog = document.getElementById("activityLog");
     const totalDose = document.getElementById("totalDose");
     const totalMSv = document.getElementById("totalMSv");
-    const doseBandText = document.getElementById("doseBand");
-    const historyList = document.getElementById("historyList");
-    const emailInput = document.getElementById("emailInput");
-    const signinText = document.getElementById("signinText");
-    const signinBtn = document.getElementById("signinBtn");
-    const signoutBtn = document.getElementById("signoutBtn");
+    const progressBar = document.getElementById("progressBar");
+    const statusBox = document.getElementById("statusBox");
+
+    function formatDose(uSv) {
+      if (uSv >= 1000) return (uSv / 1000).toFixed(2) + " mSv";
+      return uSv.toFixed(1) + " µSv";
+    }
 
     function makeId() {
       return Math.random().toString(36).slice(2) + Date.now().toString(36);
     }
 
-    function doseLabel(uSv) {
-      if (uSv >= 1000) return (uSv / 1000).toFixed(2) + " mSv";
-      return uSv.toFixed(1) + " µSv";
+    function loadActivities() {
+      activitySelect.innerHTML = activities.map((activity, index) => {
+        return `<option value="${index}">${activity.name}</option>`;
+      }).join("");
+      updateActivityInfo();
     }
 
-    function doseBand(uSv) {
-      const mSv = uSv / 1000;
-      if (mSv < 1) return "Low — below 1 mSv total in this log.";
-      if (mSv < 20) return "Moderate — worth tracking, especially if repeated often.";
-      if (mSv < 100) return "High — review with a qualified radiation-safety or medical professional.";
-      return "Very high — seek professional guidance promptly.";
+    function updateActivityInfo() {
+      const selected = activities[Number(activitySelect.value)];
+      activityInfo.innerHTML = `
+        <strong>${selected.category}</strong><br>
+        Estimated dose: <strong>${formatDose(selected.doseUSv)}</strong> ${selected.unit}
+      `;
     }
 
-    function toCsv(rows) {
-      const escape = value => '"' + String(value).replaceAll('"', '""') + '"';
-      const header = "activity,dose_uSv,unit,category";
-      const body = rows.map(row => [row.activity, row.dose_uSv, row.unit, row.category].map(escape).join(","));
-      return [header, ...body].join("\n");
-    }
+    function addActivity() {
+      const selected = activities[Number(activitySelect.value)];
+      const quantity = Number(quantityInput.value || 0);
 
-    function parseCsvLine(line) {
-      const result = [];
-      let current = "";
-      let inQuotes = false;
-
-      for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        const next = line[i + 1];
-
-        if (char === '"' && inQuotes && next === '"') {
-          current += '"';
-          i++;
-        } else if (char === '"') {
-          inQuotes = !inQuotes;
-        } else if (char === "," && !inQuotes) {
-          result.push(current.trim());
-          current = "";
-        } else {
-          current += char;
-        }
+      if (quantity <= 0) {
+        alert("Please enter a quantity greater than 0.");
+        return;
       }
 
-      result.push(current.trim());
-      return result;
-    }
-
-    function parseActivityData(rawText) {
-      const lines = rawText.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
-      if (lines.length < 2) return [];
-
-      const headers = parseCsvLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ""));
-      const activityIndex = headers.findIndex(h => ["activity", "name", "activityname"].includes(h));
-      const doseIndex = headers.findIndex(h => ["doseusv", "microsievert", "microsieverts", "usv", "dose"].includes(h));
-      const unitIndex = headers.findIndex(h => ["unit", "basis", "per"].includes(h));
-      const categoryIndex = headers.findIndex(h => ["category", "type"].includes(h));
-
-      if (activityIndex === -1 || doseIndex === -1) return [];
-
-      return lines.slice(1).map(parseCsvLine).map(cells => ({
-        activity: cells[activityIndex] || "Unnamed activity",
-        dose_uSv: Number(String(cells[doseIndex] || "0").replace(/[^0-9.-]/g, "")),
-        unit: unitIndex >= 0 ? cells[unitIndex] || "per event" : "per event",
-        category: categoryIndex >= 0 ? cells[categoryIndex] || "Custom" : "Custom"
-      })).filter(row => row.activity && Number.isFinite(row.dose_uSv));
-    }
-
-    function getActivity(activityName) {
-      return activities.find(item => item.activity === activityName);
-    }
-
-    function getCalculatedEntries() {
-      return entries.map(entry => {
-        const selected = getActivity(entry.activity);
-        const quantity = Number(entry.quantity || 0);
-        const dose = (selected ? selected.dose_uSv : 0) * quantity;
-        return { ...entry, selected, quantity, dose };
+      log.push({
+        id: makeId(),
+        name: selected.name,
+        category: selected.category,
+        unit: selected.unit,
+        doseUSv: selected.doseUSv,
+        quantity: quantity,
+        totalUSv: selected.doseUSv * quantity,
+        date: new Date().toISOString()
       });
+
+      localStorage.setItem("radiationActivityLog", JSON.stringify(log));
+      quantityInput.value = 1;
+      render();
+    }
+
+    function removeActivity(id) {
+      log = log.filter(item => item.id !== id);
+      localStorage.setItem("radiationActivityLog", JSON.stringify(log));
+      render();
+    }
+
+    function resetLog() {
+      if (!confirm("Clear all saved activities?")) return;
+      log = [];
+      localStorage.removeItem("radiationActivityLog");
+      render();
     }
 
     function getTotalUSv() {
-      return getCalculatedEntries().reduce((sum, entry) => sum + entry.dose, 0);
+      return log.reduce((sum, item) => sum + item.totalUSv, 0);
     }
 
-    function renderEntries() {
-      entriesDiv.innerHTML = "";
-
-      entries.forEach(entry => {
-        const selected = getActivity(entry.activity);
-        const dose = selected ? selected.dose_uSv * Number(entry.quantity || 0) : 0;
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "entry";
-
-        const activityOptions = activities.map(item => `
-          <option value="${escapeHtml(item.activity)}" ${item.activity === entry.activity ? "selected" : ""}>
-            ${escapeHtml(item.activity)}
-          </option>
-        `).join("");
-
-        wrapper.innerHTML = `
-          <div>
-            <label>Activity</label>
-            <select data-id="${entry.id}" data-field="activity">${activityOptions}</select>
-            <div class="small">${escapeHtml(selected?.category || "Custom")} · ${doseLabel(selected?.dose_uSv || 0)} ${escapeHtml(selected?.unit || "per event")}</div>
-          </div>
-          <div>
-            <label>Quantity</label>
-            <input data-id="${entry.id}" data-field="quantity" type="number" min="0" step="0.1" value="${entry.quantity}" />
-          </div>
-          <div>
-            <label>Estimated dose</label>
-            <div class="dose-pill">${doseLabel(dose)}</div>
-          </div>
-          <button class="ghost" data-remove="${entry.id}">×</button>
-        `;
-
-        entriesDiv.appendChild(wrapper);
-      });
-
-      entriesDiv.querySelectorAll("select, input").forEach(element => {
-        element.addEventListener("change", event => {
-          const id = event.target.dataset.id;
-          const field = event.target.dataset.field;
-          const value = event.target.value;
-          entries = entries.map(entry => entry.id === id ? { ...entry, [field]: value } : entry);
-          renderAll();
-        });
-      });
-
-      entriesDiv.querySelectorAll("[data-remove]").forEach(button => {
-        button.addEventListener("click", event => {
-          const id = event.target.dataset.remove;
-          if (entries.length > 1) {
-            entries = entries.filter(entry => entry.id !== id);
-            renderAll();
-          }
-        });
-      });
-    }
-
-    function renderTotals() {
+    function renderSummary() {
       const total = getTotalUSv();
-      totalDose.textContent = doseLabel(total);
-      totalMSv.textContent = (total / 1000).toFixed(4) + " mSv";
-      doseBandText.textContent = doseBand(total);
-    }
+      const percent = Math.min((total / ANNUAL_PUBLIC_LIMIT_USV) * 100, 100);
 
-    function renderSignin() {
-      if (user) {
-        signinText.innerHTML = `Signed in as <strong>${escapeHtml(user.email)}</strong>. Historic activity is saved locally for this prototype.`;
-        emailInput.style.display = "none";
-        signinBtn.style.display = "none";
-        signoutBtn.style.display = "inline-block";
+      totalDose.textContent = formatDose(total);
+      totalMSv.textContent = (total / 1000).toFixed(3) + " mSv";
+      progressBar.style.width = percent + "%";
+
+      statusBox.className = "status";
+
+      if (total < 500) {
+        statusBox.classList.add("low");
+        statusBox.textContent = "Low: under 50% of the 1 mSv yearly public benchmark.";
+      } else if (total < ANNUAL_PUBLIC_LIMIT_USV) {
+        statusBox.classList.add("medium");
+        statusBox.textContent = "Approaching yearly public benchmark.";
       } else {
-        signinText.textContent = "Prototype sign-in. For production, replace this with real Google OAuth or Firebase Authentication.";
-        emailInput.style.display = "block";
-        signinBtn.style.display = "inline-block";
-        signoutBtn.style.display = "none";
+        statusBox.classList.add("high");
+        statusBox.textContent = "Above 1 mSv yearly public benchmark. Review exposure sources with a professional if concerned.";
       }
     }
 
-    function renderHistory() {
-      const filtered = user ? history.filter(record => record.email === user.email) : history;
-
-      if (filtered.length === 0) {
-        historyList.innerHTML = "<p>No saved dose logs yet.</p>";
+    function renderLog() {
+      if (log.length === 0) {
+        activityLog.innerHTML = '<div class="empty">No activities added yet.</div>';
         return;
       }
 
-      historyList.innerHTML = filtered.map(record => `
-        <div class="history-item">
-          <div class="history-header">
-            <div>
-              <strong>${doseLabel(record.total_uSv)}</strong>
-              <div class="small">${new Date(record.savedAt).toLocaleString()} · ${escapeHtml(record.email)}</div>
-            </div>
-            <span class="badge">${record.entries.length} activities</span>
+      activityLog.innerHTML = log.map(item => `
+        <div class="log-item">
+          <div>
+            <div class="log-title">${escapeHtml(item.name)}</div>
+            <span class="pill">${escapeHtml(item.category)} · ${formatDose(item.doseUSv)} ${escapeHtml(item.unit)}</span>
+            <div class="small">${new Date(item.date).toLocaleString()}</div>
           </div>
-          <div style="margin-top: 10px;">
-            ${record.entries.map(entry => `
-              <div class="history-row">
-                <span>${escapeHtml(entry.activity)} × ${entry.quantity}</span>
-                <strong>${doseLabel(entry.dose_uSv)}</strong>
-              </div>
-            `).join("")}
+          <div>
+            <strong>${item.quantity}</strong>
+            <div class="small">quantity</div>
           </div>
+          <div>
+            <strong>${formatDose(item.totalUSv)}</strong>
+            <div class="small">dose</div>
+          </div>
+          <button class="danger" onclick="removeActivity('${item.id}')">×</button>
         </div>
       `).join("");
-    }
-
-    function renderAll() {
-      renderEntries();
-      renderTotals();
-      renderSignin();
-      renderHistory();
-    }
-
-    function loadSpreadsheetText(text) {
-      const parsed = parseActivityData(text);
-      if (!parsed.length) {
-        message.textContent = "Could not read the table. Use headers: activity,dose_uSv,unit,category";
-        return;
-      }
-
-      activities = parsed;
-      entries = [{ id: makeId(), activity: activities[0].activity, quantity: 1 }];
-      spreadsheetText.value = toCsv(activities);
-      message.textContent = `Loaded ${activities.length} activities from spreadsheet data.`;
-      renderAll();
-    }
-
-    function signIn() {
-      const email = emailInput.value.trim().toLowerCase();
-      if (!email || !email.includes("@")) {
-        message.textContent = "Enter a Gmail or Google account email first.";
-        return;
-      }
-
-      user = { email, name: email.split("@")[0] };
-      localStorage.setItem("dosimeterUser", JSON.stringify(user));
-      message.textContent = `Signed in as ${email}. In production, connect this button to Google OAuth.`;
-      renderAll();
-    }
-
-    function signOut() {
-      user = null;
-      localStorage.removeItem("dosimeterUser");
-      message.textContent = "Signed out on this device.";
-      renderAll();
-    }
-
-    function saveHistoricActivity() {
-      if (!user) {
-        message.textContent = "Sign in with a Google email before saving history.";
-        return;
-      }
-
-      const calculatedEntries = getCalculatedEntries();
-      const total = getTotalUSv();
-
-      const record = {
-        id: makeId(),
-        email: user.email,
-        savedAt: new Date().toISOString(),
-        total_uSv: total,
-        total_mSv: total / 1000,
-        entries: calculatedEntries.map(entry => ({
-          activity: entry.activity,
-          quantity: entry.quantity,
-          dose_uSv: Number(entry.dose.toFixed(2)),
-          unit: entry.selected?.unit || "per event",
-          category: entry.selected?.category || "Custom"
-        }))
-      };
-
-      history = [record, ...history];
-      localStorage.setItem("dosimeterHistory", JSON.stringify(history));
-      message.textContent = "Saved this dose log to historic activity on this device.";
-      renderAll();
-    }
-
-    function exportCsv() {
-      const calculatedEntries = getCalculatedEntries();
-      const total = getTotalUSv();
-
-      const rows = [
-        ["activity", "quantity", "dose_uSv", "dose_mSv"],
-        ...calculatedEntries.map(entry => [entry.activity, entry.quantity, entry.dose.toFixed(2), (entry.dose / 1000).toFixed(4)]),
-        ["TOTAL", "", total.toFixed(2), (total / 1000).toFixed(4)]
-      ];
-
-      const csv = rows.map(row => row.map(cell => '"' + String(cell).replaceAll('"', '""') + '"').join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "personal-dosimeter-log.csv";
-      a.click();
-      URL.revokeObjectURL(url);
     }
 
     function escapeHtml(value) {
@@ -609,39 +480,17 @@
         .replaceAll("'", "&#039;");
     }
 
-    document.getElementById("fileInput").addEventListener("change", event => {
-      const file = event.target.files[0];
-      if (!file) return;
+    function render() {
+      renderSummary();
+      renderLog();
+    }
 
-      const reader = new FileReader();
-      reader.onload = () => loadSpreadsheetText(String(reader.result || ""));
-      reader.readAsText(file);
-    });
+    activitySelect.addEventListener("change", updateActivityInfo);
+    document.getElementById("addBtn").addEventListener("click", addActivity);
+    document.getElementById("resetBtn").addEventListener("click", resetLog);
 
-    document.getElementById("loadTableBtn").addEventListener("click", () => {
-      loadSpreadsheetText(spreadsheetText.value);
-    });
-
-    document.getElementById("restoreBtn").addEventListener("click", () => {
-      activities = [...DEFAULT_ACTIVITIES];
-      entries = [{ id: makeId(), activity: activities[0].activity, quantity: 1 }];
-      spreadsheetText.value = toCsv(activities);
-      message.textContent = "Restored sample activity data.";
-      renderAll();
-    });
-
-    document.getElementById("addEntryBtn").addEventListener("click", () => {
-      entries.push({ id: makeId(), activity: activities[0].activity, quantity: 1 });
-      renderAll();
-    });
-
-    signinBtn.addEventListener("click", signIn);
-    signoutBtn.addEventListener("click", signOut);
-    document.getElementById("saveHistoryBtn").addEventListener("click", saveHistoricActivity);
-    document.getElementById("exportBtn").addEventListener("click", exportCsv);
-
-    spreadsheetText.value = toCsv(DEFAULT_ACTIVITIES);
-    renderAll();
+    loadActivities();
+    render();
   </script>
 </body>
 </html>
