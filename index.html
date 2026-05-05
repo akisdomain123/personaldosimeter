@@ -5,10 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>MyRadiationTracker</title>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <style>
-/* (keeping your original styles unchanged for brevity) */
 body { margin:0; font-family: Arial; background:#eef2ff; }
 .container { max-width:1000px; margin:auto; padding:20px; }
 .card { background:white; padding:20px; border-radius:16px; margin-bottom:20px; }
@@ -22,20 +19,6 @@ input, select { width:100%; padding:10px; margin-bottom:10px; }
 <div class="container">
 
 <h1>☢ MyRadiationTracker</h1>
-
-<!-- AUTH -->
-<div id="userProfile" style="display:none;">
-  <img id="userImg" width="30">
-  <span id="userName"></span>
-  <button onclick="signOut()">Sign Out</button>
-</div>
-
-<div id="g_id_onload"
-     data-client_id="YOUR_CLIENT_ID"
-     data-callback="handleCredentialResponse">
-</div>
-
-<div id="googleBtnWrapper" class="g_id_signin"></div>
 
 <!-- SUMMARY -->
 <div class="card">
@@ -61,29 +44,8 @@ input, select { width:100%; padding:10px; margin-bottom:10px; }
 </div>
 
 <script>
-let currentUser = null;
 
-/* AUTH */
-function handleCredentialResponse(response) {
-  const payload = JSON.parse(atob(response.credential.split('.')[1]));
-  currentUser = payload;
-
-  document.getElementById("googleBtnWrapper").style.display = "none";
-  document.getElementById("userProfile").style.display = "block";
-  document.getElementById("userName").innerText = payload.given_name;
-  document.getElementById("userImg").src = payload.picture;
-
-  render();
-}
-
-function signOut() {
-  currentUser = null;
-  document.getElementById("googleBtnWrapper").style.display = "block";
-  document.getElementById("userProfile").style.display = "none";
-  render();
-}
-
-/* ACTIVITIES (UPDATED FULL LIST) */
+/* ACTIVITIES */
 const activities = [
   { name: "Dental X-ray", doseUSv: 5 },
   { name: "DEXA bone density scan", doseUSv: 1 },
@@ -125,33 +87,27 @@ select.innerHTML = activities.map((a,i)=>
 
 /* STORAGE */
 function getLogs() {
-  const all = JSON.parse(localStorage.getItem("rad_logs") || "[]");
-  if (!currentUser) return [];
-  return all.filter(l => l.userId === currentUser.sub);
+  return JSON.parse(localStorage.getItem("rad_logs") || "[]");
 }
 
-function saveLog(item) {
-  if (!currentUser) {
-    alert("Login first");
-    return;
-  }
-  const all = JSON.parse(localStorage.getItem("rad_logs") || "[]");
-  item.userId = currentUser.sub;
-  all.push(item);
-  localStorage.setItem("rad_logs", JSON.stringify(all));
-  render();
+function saveLogs(logs) {
+  localStorage.setItem("rad_logs", JSON.stringify(logs));
 }
 
 /* ACTIONS */
 function addItem() {
+  const logs = getLogs();
   const activity = activities[select.value];
   const qty = parseFloat(document.getElementById("quantityInput").value);
 
-  saveLog({
+  logs.push({
     id: Date.now(),
     name: activity.name,
     totalUSv: activity.doseUSv * qty
   });
+
+  saveLogs(logs);
+  render();
 }
 
 function clearAll() {
@@ -160,9 +116,9 @@ function clearAll() {
 }
 
 function deleteItem(id) {
-  let all = JSON.parse(localStorage.getItem("rad_logs") || "[]");
-  all = all.filter(l => l.id !== id);
-  localStorage.setItem("rad_logs", JSON.stringify(all));
+  let logs = getLogs();
+  logs = logs.filter(l => l.id !== id);
+  saveLogs(logs);
   render();
 }
 
@@ -175,11 +131,6 @@ function render() {
 
   const container = document.getElementById("activityLog");
 
-  if (!currentUser) {
-    container.innerHTML = "Login to see your data";
-    return;
-  }
-
   container.innerHTML = logs.length ? logs.map(l=>`
     <div class="log-item">
       <div>${l.name} (${l.totalUSv} µSv)</div>
@@ -189,6 +140,7 @@ function render() {
 }
 
 render();
+
 </script>
 
 </body>
