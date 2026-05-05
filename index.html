@@ -1,115 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MyRadiationTracker</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MyRadiationTracker</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #eef2ff;
-    }
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 16px;
-      margin-bottom: 20px;
-    }
-
-    button {
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      background: #4f46e5;
-      color: white;
-      cursor: pointer;
-    }
-
-    input, select {
-      padding: 10px;
-      width: 100%;
-      margin-bottom: 10px;
-    }
-
-    .log-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-  </style>
+<style>
+/* (keeping your original styles unchanged for brevity) */
+body { margin:0; font-family: Arial; background:#eef2ff; }
+.container { max-width:1000px; margin:auto; padding:20px; }
+.card { background:white; padding:20px; border-radius:16px; margin-bottom:20px; }
+button { padding:10px; border:none; border-radius:10px; background:#4f46e5; color:white; cursor:pointer; }
+input, select { width:100%; padding:10px; margin-bottom:10px; }
+.log-item { display:flex; justify-content:space-between; border:1px solid #ddd; padding:10px; border-radius:10px; margin-bottom:10px; }
+</style>
 </head>
 
 <body>
 <div class="container">
 
-  <h1>☢ MyRadiationTracker</h1>
+<h1>☢ MyRadiationTracker</h1>
 
-  <div class="card">
-    <h2>Total Dose</h2>
-    <div id="totalDose">0 µSv</div>
-  </div>
+<!-- AUTH -->
+<div id="userProfile" style="display:none;">
+  <img id="userImg" width="30">
+  <span id="userName"></span>
+  <button onclick="signOut()">Sign Out</button>
+</div>
 
-  <div class="card">
-    <h2>Add Activity</h2>
+<div id="g_id_onload"
+     data-client_id="YOUR_CLIENT_ID"
+     data-callback="handleCredentialResponse">
+</div>
 
-    <select id="activitySelect"></select>
-    <input id="quantityInput" type="number" value="1"/>
+<div id="googleBtnWrapper" class="g_id_signin"></div>
 
-    <button onclick="addItem()">Add</button>
-    <button onclick="clearAll()">Clear All</button>
-  </div>
+<!-- SUMMARY -->
+<div class="card">
+  <h2>Total Dose</h2>
+  <div id="totalDose">0 µSv</div>
+</div>
 
-  <div class="card">
-    <h2>Activity Log</h2>
-    <div id="activityLog"></div>
-  </div>
+<!-- ADD -->
+<div class="card">
+  <h2>Add Activity</h2>
+  <select id="activitySelect"></select>
+  <input id="quantityInput" type="number" value="1"/>
+  <button onclick="addItem()">Add</button>
+  <button onclick="clearAll()">Clear</button>
+</div>
+
+<!-- LOG -->
+<div class="card">
+  <h2>Activity Log</h2>
+  <div id="activityLog"></div>
+</div>
 
 </div>
 
 <script>
+let currentUser = null;
+
+/* AUTH */
+function handleCredentialResponse(response) {
+  const payload = JSON.parse(atob(response.credential.split('.')[1]));
+  currentUser = payload;
+
+  document.getElementById("googleBtnWrapper").style.display = "none";
+  document.getElementById("userProfile").style.display = "block";
+  document.getElementById("userName").innerText = payload.given_name;
+  document.getElementById("userImg").src = payload.picture;
+
+  render();
+}
+
+function signOut() {
+  currentUser = null;
+  document.getElementById("googleBtnWrapper").style.display = "block";
+  document.getElementById("userProfile").style.display = "none";
+  render();
+}
+
+/* ACTIVITIES (UPDATED FULL LIST) */
 const activities = [
   { name: "Dental X-ray", doseUSv: 5 },
+  { name: "DEXA bone density scan", doseUSv: 1 },
   { name: "Chest X-ray", doseUSv: 100 },
-  { name: "CT scan", doseUSv: 7000 },
-  { name: "Flight 5 hours", doseUSv: 17.5 }
+  { name: "Mammogram", doseUSv: 400 },
+  { name: "CT head", doseUSv: 2000 },
+  { name: "CT chest", doseUSv: 7000 },
+  { name: "CT abdomen / pelvis", doseUSv: 10000 },
+  { name: "PET scan", doseUSv: 14000 },
+  { name: "Nuclear stress test", doseUSv: 10000 },
+
+  { name: "Flight: 1 hour", doseUSv: 3.5 },
+  { name: "Short-haul flight: 2 hours", doseUSv: 7 },
+  { name: "Short-haul flight: 3 hours", doseUSv: 10.5 },
+  { name: "Medium-haul flight: 5 hours", doseUSv: 17.5 },
+  { name: "Long-haul flight: 8 hours", doseUSv: 28 },
+  { name: "Long-haul flight: 12 hours", doseUSv: 42 },
+  { name: "Ultra long-haul flight: 16 hours", doseUSv: 56 },
+
+  { name: "Banana", doseUSv: 0.1 },
+
+  { name: "Background radiation: 1 day", doseUSv: 8.2 },
+  { name: "High altitude living: 1 day", doseUSv: 0.55 },
+  { name: "Radon exposure: low home (year)", doseUSv: 1000 },
+  { name: "Radon exposure: moderate home (year)", doseUSv: 3000 },
+  { name: "Radon exposure: high home (year)", doseUSv: 10000 },
+
+  { name: "Working in nuclear plant (day)", doseUSv: 10 },
+  { name: "Handling radioactive materials (low, day)", doseUSv: 5 },
+  { name: "Interventional radiology (per procedure)", doseUSv: 50 },
+  { name: "Aircrew yearly exposure", doseUSv: 3000 }
 ];
 
+/* INIT DROPDOWN */
 const select = document.getElementById("activitySelect");
-select.innerHTML = activities.map((a,i)=>`<option value="${i}">${a.name}</option>`).join("");
+select.innerHTML = activities.map((a,i)=>
+  `<option value="${i}">${a.name} (${a.doseUSv} µSv)</option>`
+).join("");
 
+/* STORAGE */
 function getLogs() {
-  return JSON.parse(localStorage.getItem("rad_logs") || "[]");
+  const all = JSON.parse(localStorage.getItem("rad_logs") || "[]");
+  if (!currentUser) return [];
+  return all.filter(l => l.userId === currentUser.sub);
 }
 
-function saveLogs(logs) {
-  localStorage.setItem("rad_logs", JSON.stringify(logs));
+function saveLog(item) {
+  if (!currentUser) {
+    alert("Login first");
+    return;
+  }
+  const all = JSON.parse(localStorage.getItem("rad_logs") || "[]");
+  item.userId = currentUser.sub;
+  all.push(item);
+  localStorage.setItem("rad_logs", JSON.stringify(all));
+  render();
 }
 
+/* ACTIONS */
 function addItem() {
-  const logs = getLogs();
   const activity = activities[select.value];
   const qty = parseFloat(document.getElementById("quantityInput").value);
 
-  logs.push({
+  saveLog({
     id: Date.now(),
     name: activity.name,
     totalUSv: activity.doseUSv * qty
   });
-
-  saveLogs(logs);
-  render();
 }
 
 function clearAll() {
@@ -118,12 +160,13 @@ function clearAll() {
 }
 
 function deleteItem(id) {
-  let logs = getLogs();
-  logs = logs.filter(l => l.id !== id);
-  saveLogs(logs);
+  let all = JSON.parse(localStorage.getItem("rad_logs") || "[]");
+  all = all.filter(l => l.id !== id);
+  localStorage.setItem("rad_logs", JSON.stringify(all));
   render();
 }
 
+/* RENDER */
 function render() {
   const logs = getLogs();
   const total = logs.reduce((s,l)=>s+l.totalUSv,0);
@@ -132,7 +175,12 @@ function render() {
 
   const container = document.getElementById("activityLog");
 
-  container.innerHTML = logs.length ? logs.map(l => `
+  if (!currentUser) {
+    container.innerHTML = "Login to see your data";
+    return;
+  }
+
+  container.innerHTML = logs.length ? logs.map(l=>`
     <div class="log-item">
       <div>${l.name} (${l.totalUSv} µSv)</div>
       <button onclick="deleteItem(${l.id})">X</button>
