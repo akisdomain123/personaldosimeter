@@ -2,341 +2,146 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MyRadiationTracker</title>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --text: #0f172a;
-      --muted: #64748b;
-      --card: #ffffff;
-      --border: #e2e8f0;
-      --primary: #4f46e5;
-      --primary-dark: #312e81;
-      --soft: #f1f5f9;
-      --green-bg: #dcfce7;
-      --green-border: #bbf7d0;
-      --blue-bg: #eff6ff;
-      --blue-border: #bfdbfe;
-      --amber-bg: #fffbeb;
-      --amber-border: #fde68a;
-      --purple-bg: #f5f3ff;
-      --purple-border: #ddd6fe;
-      --red-bg: #fee2e2;
-      --red-border: #fecaca;
-      --shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
-    }
 
-    * { box-sizing: border-box; }
+  <style>
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: radial-gradient(circle at top left, #dbeafe 0, transparent 34%), radial-gradient(circle at top right, #ede9fe 0, transparent 30%), linear-gradient(180deg, #eef2ff, var(--bg));
-      color: var(--text);
-      min-height: 100vh;
+      font-family: Arial;
+      background: #eef2ff;
     }
 
-    .container { max-width: 1120px; margin: 0 auto; padding: 28px 16px 42px; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 18px; }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 18px; letter-spacing: -0.03em; }
-    .brand-icon { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; color: white; background: linear-gradient(135deg, var(--primary), #06b6d4); box-shadow: var(--shadow); }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
 
-    /* Auth UI Styles */
-    .auth-container { display: flex; align-items: center; gap: 12px; }
-    .user-profile { display: none; align-items: center; gap: 12px; background: white; padding: 6px 16px 6px 6px; border-radius: 999px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .user-profile img { width: 32px; height: 32px; border-radius: 50%; }
-    .signout-btn { background: #f1f5f9; color: #64748b; font-size: 12px; padding: 6px 12px; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; font-weight: 700; transition: all 0.2s; }
-    .signout-btn:hover { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
 
-    .badge { display: inline-block; padding: 7px 12px; border-radius: 999px; background: rgba(79, 70, 229, 0.10); color: var(--primary-dark); font-size: 13px; font-weight: 800; }
-    h1 { margin: 14px 0 10px; font-size: 46px; line-height: 1.02; letter-spacing: -0.05em; }
-    h2 { margin: 0 0 14px; font-size: 22px; letter-spacing: -0.02em; }
-    p { color: #475569; line-height: 1.55; margin: 0 0 12px; }
-    .grid { display: grid; gap: 18px; }
-    .hero { grid-template-columns: 1.12fr 0.88fr; align-items: stretch; }
-    .card { background: rgba(255, 255, 255, 0.94); border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 26px; padding: 24px; box-shadow: var(--shadow); backdrop-filter: blur(12px); }
-    .summary-card { display: flex; flex-direction: column; justify-content: center; }
-    .big-number { font-size: 44px; font-weight: 950; margin: 6px 0; letter-spacing: -0.04em; }
-    .small { font-size: 13px; color: var(--muted); }
-    .progress-label { display: flex; justify-content: space-between; margin: 14px 0 7px; color: #334155; font-size: 13px; font-weight: 800; }
-    .progress-wrap { height: 14px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
-    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), #06b6d4); transition: width 0.2s ease; }
-    .progress-bar.worker { background: linear-gradient(90deg, #7c3aed, #ec4899); }
-    .status { border-radius: 16px; padding: 13px; margin-top: 14px; font-weight: 800; }
-    .status.low { background: var(--green-bg); color: #14532d; }
-    .status.medium { background: var(--amber-bg); color: #78350f; }
-    .status.high { background: var(--red-bg); color: #7f1d1d; }
-    .add-card { margin-top: 20px; display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 20px; }
-    label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 800; color: #334155; }
-    input, select { width: 100%; padding: 13px 14px; border: 1px solid #cbd5e1; border-radius: 16px; }
-    button { border: 0; border-radius: 16px; padding: 13px 16px; background: var(--primary); color: white; cursor: pointer; font-weight: 900; }
-    button.secondary { background: #e2e8f0; color: var(--text); }
-    button.danger { background: #991b1b; padding: 8px 12px; }
-    .log-item { display: grid; grid-template-columns: 1fr 110px 140px 44px; gap: 12px; align-items: center; border: 1px solid var(--border); border-radius: 20px; padding: 14px; margin-bottom: 12px; background: white; }
-    .empty { color: var(--muted); background: var(--soft); padding: 16px; border-radius: 18px; text-align: center; }
-    
-    @media (max-width: 850px) { .hero, .add-card, .log-item { grid-template-columns: 1fr; } }
+    button {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #4f46e5;
+      color: white;
+      cursor: pointer;
+    }
+
+    input, select {
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .log-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
+
 <body>
-  <main class="container">
-    <div class="topbar">
-      <div class="brand">
-        <div class="brand-icon">☢</div>
-        <div>MyRadiationTracker</div>
-      </div>
-      
-      <div class="auth-container">
-        <div id="userProfile" class="user-profile">
-          <img id="userImg" src="" alt="Profile">
-          <span id="userName" class="small" style="font-weight: 800;"></span>
-          <button class="signout-btn" onclick="signOut()">Sign Out</button>
-        </div>
-        
-        <div id="g_id_onload"
-             data-client_id="849446162583-nbjnsd8b6qgftp41dpi77mgur329dsfs.apps.googleusercontent.com"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
-        </div>
-        <div id="googleBtnWrapper" class="g_id_signin" data-type="standard" data-shape="pill"></div>
-      </div>
-    </div>
+<div class="container">
 
-    <section class="grid hero">
-      <div class="card">
-        <span class="badge">Dose Monitor</span>
-        <h1>Track your yearly radiation exposure.</h1>
-        <p>Login to save your personal logs and compare them to global safety standards.</p>
-      </div>
+  <h1>☢ MyRadiationTracker</h1>
 
-      <div class="card summary-card">
-        <div class="small">Total estimated dose</div>
-        <div id="totalDose" class="big-number">0 µSv</div>
-        <div id="totalMSv" class="small">0.000 mSv</div>
-        <div class="progress-label"><span>Public Limit (1mSv)/ year</span><span id="publicPercent">0%</span></div>
-        <div class="progress-wrap"><div id="progressBar" class="progress-bar"></div></div>
-        <div class="progress-label"><span>Worker Limit (20mSv) / year</span><span id="workerPercent">0%</span></div>
-        <div class="progress-wrap"><div id="workerProgressBar" class="progress-bar worker"></div></div>
-        <div id="statusBox" class="status low">Please login to see your log.</div>
-      </div>
-    </section>
+  <div class="card">
+    <h2>Total Dose</h2>
+    <div id="totalDose">0 µSv</div>
+  </div>
 
-    <section class="card add-card">
-      <div>
-        <h2>Add activity</h2>
-        <label>Activity</label>
-        <select id="activitySelect"></select>
-        <br><br>
-        <label>Quantity</label>
-        <input id="quantityInput" type="number" min="0" step="1" value="1" />
-        <div style="margin-top:20px; display:flex; gap:10px;">
-          <button id="addBtn">Add to Log</button>
-          <button id="resetBtn" class="secondary">Clear All</button>
-        </div>
-      </div>
-      <div id="activityInfo" class="card" style="background:var(--soft); box-shadow:none; border:none;">
-        <p>Select an activity to see dose details.</p>
-      </div>
-    </section>
+  <div class="card">
+    <h2>Add Activity</h2>
 
-    <section class="card">
-      <h2>Your Activity Log</h2>
-      <div id="activityLog"></div>
-    </section>
-<section class="card marketing" style="margin-top: 20px; background: linear-gradient(135deg, white, #f8faff);">
-      <h2 style="color: var(--primary-dark);">Why use this?</h2>
-      <p><strong>Are you tracking your radiation exposure? You should be.</strong></p>
-      
-      <p>Every year, millions of people undergo X-rays, CT scans, and even full-body DEXA scans—often without realizing how much radiation they are accumulating over time.</p>
-      
-      <p><strong>The truth? Most patients do not understand:</strong></p>
-      <ul style="padding-left: 20px; margin-bottom: 20px;">
-        <li>How much radiation each test exposes them to</li>
-        <li>What the safe limits are</li>
-        <li>When they might be going beyond what is necessary</li>
-      </ul>
+    <select id="activitySelect"></select>
+    <input id="quantityInput" type="number" value="1"/>
 
-      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 25px;">
-        <div style="background: white; padding: 15px; border-radius: 16px; border: 1px solid var(--border);">
-          <div style="font-size: 20px; margin-bottom: 8px;">👉 Track</div>
-          <p class="small" style="margin:0;">Log every scan—X-rays, CTs, DEXA, and more—and see your cumulative radiation in one place.</p>
-        </div>
-        <div style="background: white; padding: 15px; border-radius: 16px; border: 1px solid var(--border);">
-          <div style="font-size: 20px; margin-bottom: 8px;">👉 Limits</div>
-          <p class="small" style="margin:0;">Instantly understand whether you are within safe exposure levels based on public guidelines.</p>
-        </div>
-        <div style="background: white; padding: 15px; border-radius: 16px; border: 1px solid var(--border);">
-          <div style="font-size: 20px; margin-bottom: 8px;">👉 Decisions</div>
-          <p class="small" style="margin:0;">Before your next scan, check your history and have smarter conversations with your doctor.</p>
-        </div>
-        <div style="background: white; padding: 15px; border-radius: 16px; border: 1px solid var(--border);">
-          <div style="font-size: 20px; margin-bottom: 8px;">👉 Avoid</div>
-          <p class="small" style="margin:0;">Many people unknowingly repeat scans or opt for routine imaging that may not be needed.</p>
-        </div>
-      </div>
-    </section>
+    <button onclick="addItem()">Add</button>
+    <button onclick="clearAll()">Clear All</button>
+  </div>
 
-   
-  <section class="card feedback-section" style="margin-top: 20px; border: 1px dashed var(--primary);">
-      <h2 style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 24px;">✉</span> Share your feedback
-      </h2>
-      <p class="small">Help us improve MyRadiationTracker. Let us know what features you'd like to see next.</p>
-      
-      <textarea id="feedbackText" placeholder="I would love to see a feature for..." 
-        style="width: 100%; min-height: 100px; border-radius: 16px; border: 1px solid var(--border); padding: 12px; font-family: inherit; margin-bottom: 12px; outline: none;"></textarea>
-      
-      <div style="display: flex; justify-content: flex-end;">
-        <button onclick="sendFeedback()" style="background: var(--primary-dark); padding: 10px 24px; font-size: 14px;">
-          Send Feedback
-        </button>
-      </div>
-    </section>
-  </main>
+  <div class="card">
+    <h2>Activity Log</h2>
+    <div id="activityLog"></div>
+  </div>
 
-  <script>
-    const PUBLIC_LIMIT_USV = 1000;
-    const WORKER_LIMIT_USV = 20000;
-    let currentUser = null; // Stores user profile and ID (sub)
+</div>
 
-    // 1. AUTH LOGIC
-    function handleCredentialResponse(response) {
-        const payload = parseJwt(response.credential);
-        currentUser = payload;
-        
-        // UI Updates
-        document.getElementById("googleBtnWrapper").style.display = "none";
-        document.getElementById("userProfile").style.display = "flex";
-        document.getElementById("userName").textContent = payload.given_name;
-        document.getElementById("userImg").src = payload.picture;
-        
-        render(); // Reload log for this specific user
-    }
+<script>
+const activities = [
+  { name: "Dental X-ray", doseUSv: 5 },
+  { name: "Chest X-ray", doseUSv: 100 },
+  { name: "CT scan", doseUSv: 7000 },
+  { name: "Flight 5 hours", doseUSv: 17.5 }
+];
 
-    function sendFeedback() {
-        const feedback = document.getElementById("feedbackText").value;
-        const subject = encodeURIComponent("Feedback for MyRadiationTracker");
-        const body = encodeURIComponent(feedback || "I have some feedback regarding the app...");
-        const email = "akankshapkumar@gmail.com";
-        
-        // Opens the user's default email app
-        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-    }
+const select = document.getElementById("activitySelect");
+select.innerHTML = activities.map((a,i)=>`<option value="${i}">${a.name}</option>`).join("");
 
-    function signOut() {
-        currentUser = null;
-        document.getElementById("googleBtnWrapper").style.display = "block";
-        document.getElementById("userProfile").style.display = "none";
-        render(); // Clear view
-    }
+function getLogs() {
+  return JSON.parse(localStorage.getItem("rad_logs") || "[]");
+}
 
-    function parseJwt(token) {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-        return JSON.parse(jsonPayload);
-    }
+function saveLogs(logs) {
+  localStorage.setItem("rad_logs", JSON.stringify(logs));
+}
 
-    // 2. DATA LOGIC
-    const activities = [
-    { name: "Dental X-ray", doseUSv: 5, unit: "per event", category: "Medical" }, { name: "DEXA bone density scan", doseUSv: 1, unit: "per scan", category: "Medical" }, { name: "Chest X-ray", doseUSv: 100, unit: "per event", category: "Medical" }, { name: "Mammogram", doseUSv: 400, unit: "per event", category: "Medical" }, { name: "CT head", doseUSv: 2000, unit: "per event", category: "Medical" }, { name: "Living in Kerela sand", doseUSv: 12500, unit: "per event", category: "Medical" }, { name: "CT chest", doseUSv: 7000, unit: "per event", category: "Medical" }, { name: "CT abdomen / pelvis", doseUSv: 10000, unit: "per event", category: "Medical" }, { name: "PET scan", doseUSv: 14000, unit: "per event", category: "Medical" }, { name: "Nuclear stress test", doseUSv: 10000, unit: "per event", category: "Medical" }, { name: "Flight: 1 hour", doseUSv: 3.5, unit: "per hour", category: "Travel" }, { name: "Short-haul flight: 2 hours", doseUSv: 7, unit: "per flight", category: "Travel" }, { name: "Short-haul flight: 3 hours", doseUSv: 10.5, unit: "per flight", category: "Travel" }, { name: "Medium-haul flight: 5 hours", doseUSv: 17.5, unit: "per flight", category: "Travel" }, { name: "Long-haul flight: 8 hours", doseUSv: 28, unit: "per flight", category: "Travel" }, { name: "Long-haul flight: 12 hours", doseUSv: 42, unit: "per flight", category: "Travel" }, { name: "Ultra long-haul flight: 16 hours", doseUSv: 56, unit: "per flight", category: "Travel" }, { name: "Banana", doseUSv: 0.1, unit: "per banana", category: "Food" }, { name: "Background radiation: 1 day", doseUSv: 8.2, unit: "per day", category: "Environment" }, { name: "High altitude living: 1 day", doseUSv: 0.55, unit: "extra per day", category: "Environment" }, { name: "Radon exposure: low home, 1 year", doseUSv: 1000, unit: "per year", category: "Environment" }, { name: "Radon exposure: moderate home, 1 year", doseUSv: 3000, unit: "per year", category: "Environment" }, { name: "Radon exposure: high home, 1 year", doseUSv: 10000, unit: "per year", category: "Environment" }, { name: "Working in nuclear plant: 1 day", doseUSv: 10, unit: "per day", category: "Occupational" }, { name: "Handling radioactive materials: low, 1 day", doseUSv: 5, unit: "per day", category: "Occupational" }, { name: "Interventional radiology worker: 1 procedure", doseUSv: 50, unit: "per procedure", category: "Occupational" }, { name: "Aircrew yearly exposure", doseUSv: 3000, unit: "per year", category: "Occupational" }
-    ];
+function addItem() {
+  const logs = getLogs();
+  const activity = activities[select.value];
+  const qty = parseFloat(document.getElementById("quantityInput").value);
 
-    function getLogs() {
-        const allLogs = JSON.parse(localStorage.getItem("rad_logs") || "[]");
-        if (!currentUser) return [];
-        // Filter logs belonging only to the signed-in user ID (sub)
-        return allLogs.filter(log => log.userId === currentUser.sub);
-    }
+  logs.push({
+    id: Date.now(),
+    name: activity.name,
+    totalUSv: activity.doseUSv * qty
+  });
 
-    function saveLog(newItem) {
-        if (!currentUser) {
-            alert("Please sign in to save data!");
-            return;
-        }
-        const allLogs = JSON.parse(localStorage.getItem("rad_logs") || "[]");
-        newItem.userId = currentUser.sub; // Attach user ID
-        allLogs.push(newItem);
-        localStorage.setItem("rad_logs", JSON.stringify(allLogs));
-        render();
-    }
+  saveLogs(logs);
+  render();
+}
 
-    // 3. UI RENDER LOGIC
-    function render() {
-        const logs = getLogs();
-        const total = logs.reduce((sum, item) => sum + item.totalUSv, 0);
-        
-        // Update Numbers
-        document.getElementById("totalDose").textContent = total >= 1000 ? (total/1000).toFixed(2) + " mSv" : total.toFixed(1) + " µSv";
-        document.getElementById("totalMSv").textContent = (total / 1000).toFixed(3) + " mSv";
-        
-        // Update Bars
-        const pubPct = Math.min((total / PUBLIC_LIMIT_USV) * 100, 100);
-        const wrkPct = Math.min((total / WORKER_LIMIT_USV) * 100, 100);
-        document.getElementById("progressBar").style.width = pubPct + "%";
-        document.getElementById("workerProgressBar").style.width = wrkPct + "%";
-        document.getElementById("publicPercent").textContent = pubPct.toFixed(1) + "%";
-        document.getElementById("workerPercent").textContent = wrkPct.toFixed(1) + "%";
+function clearAll() {
+  localStorage.removeItem("rad_logs");
+  render();
+}
 
-        // Update Log Table
-        const logContainer = document.getElementById("activityLog");
-        if (!currentUser) {
-            logContainer.innerHTML = '<div class="empty">Sign in to view your records.</div>';
-            document.getElementById("statusBox").textContent = "Login required.";
-            return;
-        }
+function deleteItem(id) {
+  let logs = getLogs();
+  logs = logs.filter(l => l.id !== id);
+  saveLogs(logs);
+  render();
+}
 
-        logContainer.innerHTML = logs.length ? logs.map(item => `
+function render() {
+  const logs = getLogs();
+  const total = logs.reduce((s,l)=>s+l.totalUSv,0);
+
+  document.getElementById("totalDose").innerText = total + " µSv";
+
+  const container = document.getElementById("activityLog");
+
+  container.innerHTML = logs.length ? logs.map(l => `
     <div class="log-item">
-        <div>
-            <div style="font-weight:900;">${item.name}</div>
-            <div class="small">
-                📅 ${new Date(item.date).toLocaleDateString()} | ⏱ ${new Date(item.date).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
-            </div>
-        </div>
-
-        <div>
-            <div style="font-weight:900;">${item.quantity}</div>
-            <div class="small">quantity</div>
-        </div>
-
-        <div>
-            <div style="font-weight:900;">${item.totalUSv} µSv</div>
-            <div class="small">dose</div>
-        </div>
-
-        <button class="danger" onclick="deleteItem('${item.id}')">×</button>
+      <div>${l.name} (${l.totalUSv} µSv)</div>
+      <button onclick="deleteItem(${l.id})">X</button>
     </div>
-`).join("") : '<div class="empty">No activities logged yet.</div>';
-        
-        document.getElementById("statusBox").textContent = total < 1000 ? "Healthy range." : "Limit reached.";
-    }
+  `).join("") : "No logs yet";
+}
 
-    function deleteItem(id) {
-        let allLogs = JSON.parse(localStorage.getItem("rad_logs") || "[]");
-        allLogs = allLogs.filter(log => log.id !== id);
-        localStorage.setItem("rad_logs", JSON.stringify(allLogs));
-        render();
-    }
+render();
+</script>
 
-    // Initialization
-    const select = document.getElementById("activitySelect");
-    select.innerHTML = activities.map((a, i) => `<option value="${i}">${a.name}</option>`).join("");
-
-    document.getElementById("addBtn").onclick = () => {
-        const activity = activities[select.value];
-        const qty = parseFloat(document.getElementById("quantityInput").value);
-        saveLog({
-            id: Math.random().toString(36).substr(2, 9),
-            name: activity.name,
-            totalUSv: activity.doseUSv * qty,
-            quantity: qty,
-            date: new Date().toISOString()
-        });
-    };
-
-    render();
-  </script>
 </body>
 </html>
