@@ -6,12 +6,76 @@
 <title>MyRadiationTracker</title>
 
 <style>
-body { margin:0; font-family: Arial; background:#eef2ff; }
-.container { max-width:1000px; margin:auto; padding:20px; }
-.card { background:white; padding:20px; border-radius:16px; margin-bottom:20px; }
-button { padding:10px; border:none; border-radius:10px; background:#4f46e5; color:white; cursor:pointer; }
-input, select { width:100%; padding:10px; margin-bottom:10px; }
-.log-item { display:flex; justify-content:space-between; border:1px solid #ddd; padding:10px; border-radius:10px; margin-bottom:10px; }
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #eef2ff;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #4f46e5;
+  color: white;
+  cursor: pointer;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.log-item {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.threshold-row {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #444;
+}
+
+.progress-bg {
+  width: 100%;
+  height: 18px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #4f46e5;
+  transition: width 0.3s ease;
+}
+
+.warning {
+  color: #dc2626;
+  font-weight: bold;
+  margin-top: 10px;
+}
 </style>
 </head>
 
@@ -23,14 +87,28 @@ input, select { width:100%; padding:10px; margin-bottom:10px; }
 <!-- SUMMARY -->
 <div class="card">
   <h2>Total Dose</h2>
-  <div id="totalDose">0 µSv</div>
+  <div id="totalDose">0 µSv / 1000 µSv</div>
+
+  <div class="threshold-row">
+    Toward yearly public exposure threshold: <span id="thresholdProgress">0%</span>
+  </div>
+
+  <div class="progress-bg">
+    <div id="progressBar" class="progress-bar"></div>
+  </div>
+
+  <div class="threshold-row">
+    Threshold: 1 mSv = 1000 µSv
+  </div>
+
+  <div id="thresholdWarning"></div>
 </div>
 
 <!-- ADD -->
 <div class="card">
   <h2>Add Activity</h2>
   <select id="activitySelect"></select>
-  <input id="quantityInput" type="number" value="1"/>
+  <input id="quantityInput" type="number" value="1" min="0" step="0.1"/>
   <button onclick="addItem()">Add</button>
   <button onclick="clearAll()">Clear</button>
 </div>
@@ -44,6 +122,9 @@ input, select { width:100%; padding:10px; margin-bottom:10px; }
 </div>
 
 <script>
+
+/* THRESHOLD */
+const THRESHOLD_USV = 1000; // 1 mSv = 1000 µSv
 
 /* ACTIVITIES */
 const activities = [
@@ -65,7 +146,7 @@ const activities = [
   { name: "Long-haul flight: 12 hours", doseUSv: 42 },
   { name: "Ultra long-haul flight: 16 hours", doseUSv: 56 },
 
-
+  { name: "Airport body scanner", doseUSv: 0.1 },
   { name: "Banana", doseUSv: 0.1 },
 
   { name: "Background radiation: 1 day", doseUSv: 8.2 },
@@ -82,7 +163,8 @@ const activities = [
 
 /* INIT DROPDOWN */
 const select = document.getElementById("activitySelect");
-select.innerHTML = activities.map((a,i)=>
+
+select.innerHTML = activities.map((a, i) =>
   `<option value="${i}">${a.name} (${a.doseUSv} µSv)</option>`
 ).join("");
 
@@ -101,9 +183,15 @@ function addItem() {
   const activity = activities[select.value];
   const qty = parseFloat(document.getElementById("quantityInput").value);
 
+  if (isNaN(qty) || qty <= 0) {
+    alert("Please enter a valid quantity.");
+    return;
+  }
+
   logs.push({
     id: Date.now(),
     name: activity.name,
+    quantity: qty,
     totalUSv: activity.doseUSv * qty
   });
 
@@ -126,15 +214,30 @@ function deleteItem(id) {
 /* RENDER */
 function render() {
   const logs = getLogs();
-  const total = logs.reduce((s,l)=>s+l.totalUSv,0);
+  const total = logs.reduce((s, l) => s + l.totalUSv, 0);
 
-  document.getElementById("totalDose").innerText = total + " µSv";
+  const percent = (total / THRESHOLD_USV) * 100;
+  const cappedPercent = Math.min(percent, 100);
+
+  document.getElementById("totalDose").innerText =
+    total.toFixed(1) + " µSv / 1000 µSv";
+
+  document.getElementById("thresholdProgress").innerText =
+    percent.toFixed(1) + "%";
+
+  document.getElementById("progressBar").style.width =
+    cappedPercent + "%";
+
+  document.getElementById("thresholdWarning").innerHTML =
+    total >= THRESHOLD_USV
+      ? `<div class="warning">You have reached or exceeded 1 mSv.</div>`
+      : "";
 
   const container = document.getElementById("activityLog");
 
-  container.innerHTML = logs.length ? logs.map(l=>`
+  container.innerHTML = logs.length ? logs.map(l => `
     <div class="log-item">
-      <div>${l.name} (${l.totalUSv} µSv)</div>
+      <div>${l.name} × ${l.quantity || 1} = ${l.totalUSv.toFixed(1)} µSv</div>
       <button onclick="deleteItem(${l.id})">X</button>
     </div>
   `).join("") : "No logs yet";
